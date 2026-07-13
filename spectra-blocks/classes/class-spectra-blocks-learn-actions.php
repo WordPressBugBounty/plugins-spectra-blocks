@@ -15,7 +15,7 @@ if ( ! class_exists( 'Spectra_Blocks_Learn_Actions' ) ) {
 	/**
 	 * Class Spectra_Blocks_Learn_Actions
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 */
 	class Spectra_Blocks_Learn_Actions {
 
@@ -24,14 +24,14 @@ if ( ! class_exists( 'Spectra_Blocks_Learn_Actions' ) ) {
 		 *
 		 * @access private
 		 * @var self|null Class object.
-		 * @since 0.0.9
+		 * @since 1.0.0
 		 */
 		private static $instance = null;
 
 		/**
 		 * Get instance.
 		 *
-		 * @since 0.0.9
+		 * @since 1.0.0
 		 * @return self initialized object of class.
 		 */
 		public static function get_instance() {
@@ -44,7 +44,7 @@ if ( ! class_exists( 'Spectra_Blocks_Learn_Actions' ) ) {
 		/**
 		 * Constructor.
 		 *
-		 * @since 0.0.9
+		 * @since 1.0.0
 		 */
 		public function __construct() {
 			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_learn_actions_script' ) );
@@ -53,7 +53,7 @@ if ( ! class_exists( 'Spectra_Blocks_Learn_Actions' ) ) {
 		/**
 		 * Enqueue JavaScript for learn actions functionality.
 		 *
-		 * @since 0.0.9
+		 * @since 1.0.0
 		 * @return void
 		 */
 		public function enqueue_learn_actions_script() {

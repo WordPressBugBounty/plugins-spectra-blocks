@@ -17,7 +17,7 @@ use SpectraBlocks\Traits\Singleton;
  * Unlike responsive conditions (CSS-based), this extension completely removes
  * block HTML from the page output using the render_block filter.
  *
- * @since 0.0.9
+ * @since 1.0.0
  */
 class DisplayConditions {
 
@@ -29,7 +29,7 @@ class DisplayConditions {
 	 * Hooks into render_block to evaluate display conditions and
 	 * remove blocks that should not be visible to the current user.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
@@ -45,7 +45,7 @@ class DisplayConditions {
 	 * Returns an empty string to completely remove the block from page output
 	 * when the user's login state matches a hide condition.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @param string $block_content The block content.
 	 * @param array  $block         The block instance.
@@ -106,7 +106,7 @@ class DisplayConditions {
 	/**
 	 * Determine whether the block should be processed for display conditions.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @param array $block Block data.
 	 * @return bool
@@ -123,7 +123,7 @@ class DisplayConditions {
 	 *
 	 * Uses the same filtering logic as the JavaScript side to ensure consistency.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @param string $block_name Block name.
 	 * @return bool
@@ -132,7 +132,7 @@ class DisplayConditions {
 		/**
 		 * Filter to allow or exclude specific blocks from display conditions.
 		 *
-		 * @since 0.0.9
+		 * @since 1.0.0
 		 *
 		 * @param array  $excluded_blocks Array of block names to exclude.
 		 * @param string $block_name      The current block name being checked.
@@ -147,7 +147,7 @@ class DisplayConditions {
 		/**
 		 * Filter to specify which blocks explicitly support display conditions.
 		 *
-		 * @since 0.0.9
+		 * @since 1.0.0
 		 *
 		 * @param array  $supported_blocks Array of block names that support display conditions.
 		 * @param string $block_name       The current block name being checked.
@@ -162,7 +162,7 @@ class DisplayConditions {
 		/**
 		 * Filter to modify the allowed block prefixes for display conditions.
 		 *
-		 * @since 0.0.9
+		 * @since 1.0.0
 		 *
 		 * @param array  $allowed_prefixes Array of block name prefixes to allow.
 		 * @param string $block_name       The current block name being checked.
@@ -182,12 +182,12 @@ class DisplayConditions {
 	/**
 	 * Enqueue editor assets for display conditions.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
 	public function enqueue_editor_assets() {
-		wp_enqueue_style( 'spectra-extensions-display-conditions' );
+		wp_enqueue_style( 'spectra-blocks-extensions-display-conditions' );
 	}
 
 	/**
@@ -195,7 +195,7 @@ class DisplayConditions {
 	 *
 	 * Passes user roles to JavaScript for the role-based visibility control.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @param string $folder_name The extension folder name.
 	 * @param array  $asset_file  The asset file data.
@@ -229,7 +229,7 @@ class DisplayConditions {
 	/**
 	 * Check if the current user's OS matches the given key.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @param string $os_key The OS key to match against.
 	 * @return bool Whether the OS matches.

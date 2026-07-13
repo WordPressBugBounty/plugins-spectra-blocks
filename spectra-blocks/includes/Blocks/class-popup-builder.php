@@ -44,6 +44,22 @@ class PopupBuilder {
 	protected $popup_ids;
 
 	/**
+	 * Pre-rendered popup HTML keyed by popup ID.
+	 *
+	 * Populated during enqueue_popup_scripts() (which runs at wp_enqueue_scripts
+	 * priority 1, before wp_head) so that every block inside a popup — including
+	 * blocks that use the Interactivity API or register a viewScript — gets its
+	 * assets enqueued before wp_head fires. Without pre-rendering, do_blocks()
+	 * would run at wp_body_open (after wp_head) and those scripts would be missing
+	 * from the page, breaking the Interactivity API and blocks like countdown.
+	 *
+	 * @var array<int,string> $popup_rendered_html
+	 *
+	 * @since 1.0.0
+	 */
+	protected $popup_rendered_html = array();
+
+	/**
 	 * Constructor to Default the Current Instance's Post ID and add the Shortcode if needed.
 	 *
 	 * @return void
@@ -52,8 +68,9 @@ class PopupBuilder {
 	 */
 	public function __construct() {
 
-		$this->post_id   = 0;
-		$this->popup_ids = array();
+		$this->post_id             = 0;
+		$this->popup_ids           = array();
+		$this->popup_rendered_html = array();
 	}
 
 	/**
@@ -63,7 +80,7 @@ class PopupBuilder {
 	 * wp_enqueue_scripts priority 1. Used by GlobalStyles to
 	 * load GS CSS for blocks inside popups.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @return array<int> Array of popup post IDs.
 	 */
@@ -155,34 +172,56 @@ class PopupBuilder {
 
 		endwhile;
 		wp_reset_postdata();
-		if ( function_exists( 'wp_is_block_theme' ) && wp_is_block_theme() ) {
-			$this_post = get_post( $this->post_id );
-			$this->append_my_shortcode( $this_post, $this->popup_ids );
-		} else {
-			/**
-			 * Render queued popups via wp_body_open for classic (non-block)
-			 * themes, including special template pages (404, search, tag,
-			 * archive) where post content filtering is unavailable. Block
-			 * themes inject popups into post content via append_my_shortcode()
-			 * above and must not double-render via wp_body_open.
-			 *
-			 * @since 0.0.9
-			 */
-			add_action( 'wp_body_open', array( $this, 'generate_popup_shortcode' ) );
+
+		// Pre-render each popup now (still inside wp_enqueue_scripts priority 1,
+		// before wp_head fires). do_blocks() triggers each block's render_callback,
+		// which calls wp_enqueue_style() / wp_enqueue_script() for block assets —
+		// including Interactivity API view scripts. Enqueueing here ensures those
+		// assets land in <head> rather than being printed too late in wp_footer.
+		foreach ( $this->popup_ids as $popup_id ) {
+			$popup = get_post( $popup_id );
+			if ( ! $popup instanceof \WP_Post ) {
+				continue;
+			}
+			if ( 'publish' !== $popup->post_status ) {
+				continue;
+			}
+			$this->popup_rendered_html[ $popup_id ] = do_blocks( $popup->post_content );
 		}
+
+		// The pre-rendering above may have enqueued 'spectra-responsive-styles' via
+		// wp_add_inline_style() calls inside popup block render callbacks.
+		// If that handle is printed in <head>, any CSS added by page blocks (which
+		// render AFTER wp_head fires, during the_content()) is silently discarded.
+		// Fix: dequeue it now so it misses <head>. Page blocks will re-enqueue it
+		// during template rendering. A wp_footer action pins re-enqueueing in case
+		// no page blocks need responsive CSS. Either way, popup + page CSS accumulate
+		// in the handle's inline data and are output together in the footer.
+		wp_dequeue_style( 'spectra-responsive-styles' );
+		add_action(
+			'wp_footer',
+			static function () {
+				if ( wp_style_is( 'spectra-responsive-styles', 'registered' ) ) {
+					wp_enqueue_style( 'spectra-responsive-styles' );
+				}
+			},
+			1
+		);
+
+		add_action( 'wp_body_open', array( $this, 'generate_popup_shortcode' ) );
 	}
 
 	/**
-	 * Generate the popup shortcodes needed.
+	 * Output the pre-rendered popup HTML at wp_body_open.
 	 *
 	 * @return void
 	 *
 	 * @since 3.0.0
 	 */
 	public function generate_popup_shortcode() {
-		if ( is_array( $this->popup_ids ) && ! empty( $this->popup_ids ) ) {
-			foreach ( $this->popup_ids as $popup_id ) {
-				echo do_shortcode( '[spectra_blocks_popup id=' . esc_attr( $popup_id ) . ']' );
+		foreach ( $this->popup_ids as $popup_id ) {
+			if ( isset( $this->popup_rendered_html[ $popup_id ] ) ) {
+				echo $this->popup_rendered_html[ $popup_id ]; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- rendered block HTML
 			}
 		}
 	}
@@ -248,7 +287,7 @@ class PopupBuilder {
 	/**
 	 * Initialize the Popup Builder: register the CPT and its post meta.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
@@ -262,7 +301,7 @@ class PopupBuilder {
 	 * on the frontend. Without this handler, do_shortcode() returns the
 	 * literal shortcode string and popups never render.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
@@ -273,7 +312,7 @@ class PopupBuilder {
 	/**
 	 * Render a popup post by ID via blocks API.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @param array<string,mixed>|string $atts Shortcode attributes.
 	 * @return string Rendered popup HTML or empty string when invalid.
@@ -316,7 +355,7 @@ class PopupBuilder {
 	 * Mirrors the registration done by UAG for backward compatibility with
 	 * existing popup content and meta keys.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
@@ -459,7 +498,7 @@ class PopupBuilder {
 		/**
 		 * Fires after the spectra-popup CPT and its post meta are registered.
 		 *
-		 * @since 0.0.9
+		 * @since 1.0.0
 		 */
 		do_action( 'spectra_blocks_register_popup_meta' );
 	}
@@ -467,7 +506,7 @@ class PopupBuilder {
 	/**
 	 * Enqueues scripts for the Toggle Button in the Popup Table.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
@@ -518,7 +557,7 @@ class PopupBuilder {
 	 * the popup list does not look like a default WordPress CPT list and
 	 * exposes the enable/disable toggle that the admin JS wires up.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @param array<string,string> $columns Existing list table columns.
 	 * @return array<string,string> Modified columns.
@@ -542,7 +581,7 @@ class PopupBuilder {
 		 * Pro extensions hook here to add a Display Conditions / Trigger
 		 * column before the enable/disable toggle.
 		 *
-		 * @since 0.0.9
+		 * @since 1.0.0
 		 *
 		 * @param array<string,string> $columns Current columns.
 		 */
@@ -560,7 +599,7 @@ class PopupBuilder {
 	/**
 	 * Render the value for our custom popup admin columns.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @param string $column  Column slug.
 	 * @param int    $post_id Current row's post ID.
@@ -633,7 +672,7 @@ class PopupBuilder {
 				 * extensions can output their own column values (e.g. trigger,
 				 * display conditions).
 				 *
-				 * @since 0.0.9
+				 * @since 1.0.0
 				 *
 				 * @param string $column  Column slug being rendered.
 				 * @param int    $post_id Current row's post ID.
@@ -649,7 +688,7 @@ class PopupBuilder {
 	 * spectra-blocks is the standalone successor they should be fully manageable
 	 * here — same block, different plugin load path.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @param \WP_Query $query The current query.
 	 * @return void
@@ -671,7 +710,7 @@ class PopupBuilder {
 	/**
 	 * Extend the WHERE clause to include spectra-popup (UAGB beta) posts.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @param string $where The WHERE clause.
 	 * @return string Modified WHERE clause.

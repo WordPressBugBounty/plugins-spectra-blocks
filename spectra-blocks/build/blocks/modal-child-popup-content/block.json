@@ -70,7 +70,7 @@
   "style": [
     "file:./style-index.css",
     "spectra-blocks-common",
-    "spectra-components-block-appender"
+    "spectra-blocks-components-block-appender"
   ],
   "usesContext": [
     "spectra/modal/modalPosition",

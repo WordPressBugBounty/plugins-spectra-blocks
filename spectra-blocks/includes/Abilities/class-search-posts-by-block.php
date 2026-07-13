@@ -17,14 +17,14 @@ defined( 'ABSPATH' ) || exit;
 /**
  * SearchPostsByBlock ability class.
  *
- * @since 0.0.9
+ * @since 1.0.0
  */
 class SearchPostsByBlock extends AbstractAbility {
 
 	/**
 	 * Get the ability name.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @return string
 	 */
@@ -35,7 +35,7 @@ class SearchPostsByBlock extends AbstractAbility {
 	/**
 	 * Get the ability label.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @return string
 	 */
@@ -46,7 +46,7 @@ class SearchPostsByBlock extends AbstractAbility {
 	/**
 	 * Get the ability description.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @return string
 	 */
@@ -57,7 +57,7 @@ class SearchPostsByBlock extends AbstractAbility {
 	/**
 	 * Get the ability category.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @return string
 	 */
@@ -68,7 +68,7 @@ class SearchPostsByBlock extends AbstractAbility {
 	/**
 	 * Get ability annotations for REST discovery.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @return array
 	 */
@@ -83,7 +83,7 @@ class SearchPostsByBlock extends AbstractAbility {
 	/**
 	 * Get the input schema.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @return array
 	 */
@@ -94,7 +94,7 @@ class SearchPostsByBlock extends AbstractAbility {
 			'properties' => array(
 				'block_name' => array(
 					'type'        => 'string',
-					'description' => __( 'The block name to search for (e.g. "container", "buttons"). The spectra/ prefix is added automatically if not provided.', 'spectra-blocks' ),
+					'description' => __( 'The block name to search for (e.g. "container", "spectra-pro/mega-menu"). The spectra/ prefix is added automatically if no namespace is given.', 'spectra-blocks' ),
 				),
 				'post_type'  => array(
 					'type'        => 'array',
@@ -114,7 +114,7 @@ class SearchPostsByBlock extends AbstractAbility {
 	/**
 	 * Get the output schema.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @return array
 	 */
@@ -142,7 +142,7 @@ class SearchPostsByBlock extends AbstractAbility {
 	/**
 	 * Execute the ability.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @param array $params Input parameters.
 	 * @return array|WP_Error Result or error.

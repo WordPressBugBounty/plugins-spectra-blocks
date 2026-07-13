@@ -19,7 +19,6 @@ $icon_props = array(
 	'focusable'   => 'false',
 	'aria-hidden' => 'true',
 	'style'       => array(
-		'fill'      => 'currentColor',
 		'transform' => ! empty( $rotation ) ? 'rotate(' . $rotation . 'deg)' : '',
 	),
 );

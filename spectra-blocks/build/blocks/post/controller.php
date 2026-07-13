@@ -2,7 +2,7 @@
 /**
  * Controller for the Post Block.
  *
- * @since 0.0.9
+ * @since 1.0.0
  *
  * @package Spectra\Blocks\Post
  */

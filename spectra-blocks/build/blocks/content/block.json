@@ -138,6 +138,10 @@
     },
     "textShadowOffsetY": {
       "type": "number"
+    },
+    "htmlAttributes": {
+      "type": "object",
+      "default": {}
     }
   }
 }

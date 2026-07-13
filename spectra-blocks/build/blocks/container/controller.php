@@ -48,7 +48,7 @@ $bottom_invert              = $attributes['bottomInvert'] ?? false;
 $bottom_content_above_shape = $attributes['bottomContentAboveShape'] ?? false;
 
 // Get background attributes.
-$background                = $attributes['background'] ?? array();
+$background                = $attributes['background'] ?? null;
 $enable_adv_gradients      = $attributes['enableAdvGradients'] ?? false;
 $enable_adv_bg_gradient    = $attributes['enableAdvBgGradient'] ?? false;
 $enable_adv_bg_grad_hover  = $attributes['enableAdvBgGradientHover'] ?? false;
@@ -71,6 +71,7 @@ $has_responsive_image   = false;
 $responsive_controls    = $attributes['responsiveControls'] ?? array();
 $video_background       = null;
 $has_responsive_overlay = false;
+
 // Check for video and image backgrounds in responsive controls.
 $responsive_overlay_data = null;
 foreach ( array( 'lg', 'md', 'sm' ) as $device ) {
@@ -81,7 +82,7 @@ foreach ( array( 'lg', 'md', 'sm' ) as $device ) {
 			if ( null === $video_background ) {
 				$video_background = $responsive_controls[ $device ]['background'];
 			}
-		} elseif ( 'image' === $responsive_controls[ $device ]['background']['type'] && ! empty( $background['media']['url'] ) ) {
+		} elseif ( 'image' === $responsive_controls[ $device ]['background']['type'] ) {
 			$has_responsive_image = true;
 		}
 	}
@@ -181,32 +182,47 @@ if ( null !== $flex_wrap_inline_value ) {
 }
 
 // Style and class configurations.
-$config = array(
-	array(
+//
+// Only emit inline `overflow` when the value differs from the block.json default
+// ('visible'). The default emits as `style="overflow: visible"` on every container,
+// which beats className-driven utilities like `overflow-x-hidden` /
+// `overflow-hidden` (specificity zero vs inline). UI users who pick a non-default
+// overflow value via the block panel still get inline emission as before.
+//
+// @since 1.0.0.
+$config = array();
+if ( 'visible' !== $overflow ) {
+	$config[] = array(
 		'key'        => 'overflow',
 		'css_var'    => 'overflow',
 		'class_name' => null,
 		'value'      => $overflow,
-	),
-	array(
-		'key'        => 'flexWrap',
-		'css_var'    => 'flex-wrap',
-		'class_name' => null,
-		'value'      => $flex_wrap_inline_value,
-	),
-	array( 'key' => 'textColor' ),
-	array( 'key' => 'textColorHover' ),
-	array( 'key' => 'backgroundColorHover' ),
-	array(
-		'key'   => 'backgroundGradientHover',
-		'value' => $background_gradient_hover,
-	),
-	array( 'key' => 'backgroundColor' ),
-	array(
+	);
+}
+$config[] = array(
+	'key'        => 'flexWrap',
+	'css_var'    => 'flex-wrap',
+	'class_name' => null,
+	'value'      => $flex_wrap_inline_value,
+);
+$config[] = array( 'key' => 'textColor' );
+$config[] = array( 'key' => 'textColorHover' );
+$config[] = array( 'key' => 'backgroundColorHover' );
+$config[] = array( 'key' => 'backgroundColor' );
+
+if ( ! empty( $background_gradient ) ) {
+	$config[] = array(
 		'key'   => 'backgroundGradient',
 		'value' => $background_gradient,
-	),
-);
+	);
+}
+
+if ( ! empty( $background_gradient_hover ) ) {
+	$config[] = array(
+		'key'   => 'backgroundGradientHover',
+		'value' => $background_gradient_hover,
+	);
+}
 
 // Only add dimRatio to config if it has a valid numeric value.
 if ( null !== $dim_ratio ) {
@@ -276,7 +292,7 @@ $custom_classes = array(
 	// Video background class is required for proper positioning (from common.scss).
 	( 'video' === $background_type || $has_video_background ) ? 'spectra-background-video' : '',
 	// These classes are used for overflow handling with border-radius.
-	$has_video_background ? 'has-video-background' : '',
+	( $has_video_background || 'video' === $background_type ) ? 'has-video-background' : '',
 	( $has_image_background || $has_responsive_image ) ? 'has-image-background' : '',
 	// Add overlay class when overlay is used.
 	$has_responsive_overlay ? 'spectra-background-overlay' : '',

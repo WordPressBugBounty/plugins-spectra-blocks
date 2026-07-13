@@ -45,7 +45,90 @@ class FontManager {
 	 */
 	public function init() {
 		add_filter( 'wp_theme_json_data_user', array( $this, 'filter_theme_json' ) );
+		// Run AFTER any other filter that adds fontFace entries so we can
+		// normalize every font src URL — including ones already stored in
+		// the user's wp_global_styles post under a different scheme — to
+		// match the current request. Without this, font files saved with
+		// `https://...` srcs fail to load inside the editor's `blob:`
+		// iframe canvas when the admin request is `http://...` (and vice
+		// versa) because the cross-scheme fetch is blocked.
+		add_filter( 'wp_theme_json_data_user', array( $this, 'normalize_font_face_urls' ), 99 );
+		add_filter( 'wp_theme_json_data_theme', array( $this, 'normalize_font_face_urls' ), 99 );
+		add_filter( 'wp_theme_json_data_default', array( $this, 'normalize_font_face_urls' ), 99 );
 		add_action( 'updated_option', array( $this, 'handle_option_update' ), 10, 3 );
+	}
+
+	/**
+	 * Normalize the URL scheme of every font-face `src` entry in the
+	 * theme.json data so it matches the current request. Handles the
+	 * common dev / staging gotcha where font URLs were saved under one
+	 * scheme (e.g. `https://`) but the runtime serves another (`http://`).
+	 *
+	 * Walks `settings.typography.fontFamilies.custom[].fontFace[].src`
+	 * (which can be a string or an array per the theme.json schema)
+	 * and rewrites the scheme via `set_url_scheme()`. Same-origin URLs
+	 * only — external font URLs (Google Fonts CDN etc.) are left
+	 * untouched.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param \WP_Theme_JSON_Data $theme_json Theme JSON data container.
+	 * @return \WP_Theme_JSON_Data
+	 */
+	public function normalize_font_face_urls( $theme_json ) {
+		if ( ! is_object( $theme_json ) || ! method_exists( $theme_json, 'get_data' ) || ! method_exists( $theme_json, 'update_with' ) ) {
+			return $theme_json;
+		}
+
+		$data = $theme_json->get_data();
+		if ( empty( $data['settings']['typography']['fontFamilies'] ) ) {
+			return $theme_json;
+		}
+
+		$site_host = wp_parse_url( site_url(), PHP_URL_HOST );
+		$changed   = false;
+
+		foreach ( $data['settings']['typography']['fontFamilies'] as $bucket => $families ) {
+			if ( ! is_array( $families ) ) {
+				continue;
+			}
+			foreach ( $families as $i => $family ) {
+				if ( empty( $family['fontFace'] ) || ! is_array( $family['fontFace'] ) ) {
+					continue;
+				}
+				foreach ( $family['fontFace'] as $j => $face ) {
+					if ( empty( $face['src'] ) ) {
+						continue;
+					}
+					$srcs = is_array( $face['src'] ) ? $face['src'] : array( $face['src'] );
+					$new  = array();
+					foreach ( $srcs as $src ) {
+						if ( ! is_string( $src ) ) {
+							$new[] = $src;
+							continue;
+						}
+						$src_host = wp_parse_url( $src, PHP_URL_HOST );
+						// Only normalize same-origin URLs.
+						if ( $src_host && $site_host && $src_host === $site_host ) {
+							$normalized = set_url_scheme( $src );
+							if ( $normalized !== $src ) {
+								$src     = $normalized;
+								$changed = true;
+							}
+						}
+						$new[] = $src;
+					}
+					$data['settings']['typography']['fontFamilies'][ $bucket ][ $i ]['fontFace'][ $j ]['src'] =
+						is_array( $face['src'] ) ? $new : $new[0];
+				}
+			}
+		}
+
+		if ( $changed ) {
+			$theme_json->update_with( $data );
+		}
+
+		return $theme_json;
 	}
 
 	/**

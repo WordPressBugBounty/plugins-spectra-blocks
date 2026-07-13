@@ -5,7 +5,7 @@
  * Creates a spectra/container block with configurable layout and inner blocks.
  *
  * @package Spectra_Blocks
- * @since 0.0.9
+ * @since 1.0.0
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -23,7 +23,7 @@ if ( ! class_exists( 'Spectra_Blocks_Ability_Create_Container' ) ) {
 		/**
 		 * Gate: write ability.
 		 *
-		 * @since 0.0.9
+		 * @since 1.0.0
 		 * @var string
 		 */
 		protected $gated = 'spectra_blocks_enable_edit_abilities';
@@ -46,7 +46,7 @@ if ( ! class_exists( 'Spectra_Blocks_Ability_Create_Container' ) ) {
 		 * {@inheritdoc}
 		 */
 		protected function get_description() {
-			return __( 'Creates a spectra/container block with configurable flex layout, direction, alignment, gap, and padding. Optionally inserts it into a post. Inner blocks can be provided as raw block markup.', 'spectra-blocks' );
+			return __( 'Creates a spectra/container block with configurable flex layout, direction, alignment, and gap. Optionally inserts it into a post. Inner blocks can be provided as serialized block markup.', 'spectra-blocks' );
 		}
 
 		/**
@@ -62,8 +62,8 @@ if ( ! class_exists( 'Spectra_Blocks_Ability_Create_Container' ) ) {
 		protected function get_annotations() {
 			return array(
 				'readonly'      => false,
-				'destructive'   => false,
-				'idempotent'    => true,
+				'destructive'   => true,
+				'idempotent'    => false,
 				'openWorldHint' => false,
 			);
 		}
@@ -151,11 +151,11 @@ if ( ! class_exists( 'Spectra_Blocks_Ability_Create_Container' ) ) {
 				'columnGapDesktop'      => $gap,
 			);
 
-			$attrs_json = wp_json_encode( $attrs );
+			$attrs_json = wp_json_encode( $attrs, JSON_HEX_TAG );
 			$markup     = "<!-- wp:spectra/container {$attrs_json} -->\n";
 			$markup    .= '<div class="wp-block-spectra-container">';
 			if ( $inner_blocks ) {
-				$markup .= "\n" . $inner_blocks . "\n";
+				$markup .= "\n" . serialize_blocks( parse_blocks( $inner_blocks ) ) . "\n";
 			}
 			$markup .= "</div>\n";
 			$markup .= "<!-- /wp:spectra/container -->\n";

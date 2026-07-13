@@ -95,7 +95,8 @@
   "editorStyle": "file:./index.css",
   "style": [
     "file:./style-index.css",
-    "spectra-blocks-common"
+    "spectra-blocks-common",
+    "spectra-blocks-imported-baseline"
   ],
   "attributes": {
     "anchor": {
@@ -196,6 +197,24 @@
     },
     "advBgGradientHover": {
       "type": "string"
+    },
+    "advBgGradientAngle": {
+      "type": "number"
+    },
+    "advBgGradientLocation1": {
+      "type": "number"
+    },
+    "advBgGradientLocation2": {
+      "type": "number"
+    },
+    "advBgGradientHoverAngle": {
+      "type": "number"
+    },
+    "advBgGradientHoverLocation1": {
+      "type": "number"
+    },
+    "advBgGradientHoverLocation2": {
+      "type": "number"
     },
     "isBlockRootParent": {
       "type": "boolean",
@@ -308,6 +327,10 @@
     },
     "borderHover": {
       "type": "object"
+    },
+    "htmlAttributes": {
+      "type": "object",
+      "default": {}
     }
   }
 }

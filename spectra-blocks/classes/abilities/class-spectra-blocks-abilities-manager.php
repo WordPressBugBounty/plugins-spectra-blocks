@@ -6,7 +6,7 @@
  * making them discoverable and executable by AI agents.
  *
  * @package Spectra_Blocks
- * @since 0.0.9
+ * @since 1.0.0
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -18,7 +18,7 @@ if ( ! class_exists( 'Spectra_Blocks_Abilities_Manager' ) ) {
 	/**
 	 * Class Spectra_Blocks_Abilities_Manager.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 */
 	final class Spectra_Blocks_Abilities_Manager {
 
@@ -32,7 +32,7 @@ if ( ! class_exists( 'Spectra_Blocks_Abilities_Manager' ) ) {
 		/**
 		 * Get instance.
 		 *
-		 * @since 0.0.9
+		 * @since 1.0.0
 		 * @return Spectra_Blocks_Abilities_Manager
 		 */
 		public static function get_instance() {
@@ -73,7 +73,7 @@ if ( ! class_exists( 'Spectra_Blocks_Abilities_Manager' ) ) {
 		/**
 		 * Load ability class files.
 		 *
-		 * @since 0.0.9
+		 * @since 1.0.0
 		 * @return void
 		 */
 		private function load_ability_classes() {
@@ -88,7 +88,7 @@ if ( ! class_exists( 'Spectra_Blocks_Abilities_Manager' ) ) {
 		/**
 		 * Register ability categories.
 		 *
-		 * @since 0.0.9
+		 * @since 1.0.0
 		 * @return void
 		 */
 		public function register_categories() {
@@ -112,7 +112,7 @@ if ( ! class_exists( 'Spectra_Blocks_Abilities_Manager' ) ) {
 		/**
 		 * Register all abilities.
 		 *
-		 * @since 0.0.9
+		 * @since 1.0.0
 		 * @return void
 		 */
 		public function register_abilities() {
@@ -133,7 +133,7 @@ if ( ! class_exists( 'Spectra_Blocks_Abilities_Manager' ) ) {
 		 *
 		 * Creates an MCP server at spectra-blocks/v1/mcp exposing only spectra/ abilities.
 		 *
-		 * @since 0.0.9
+		 * @since 1.0.0
 		 * @param object $adapter The MCP adapter instance.
 		 * @return void
 		 */

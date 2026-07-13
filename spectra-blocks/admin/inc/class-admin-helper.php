@@ -95,7 +95,7 @@ class Admin_Helper {
 	 * save handler preserves the stored secret when the incoming value
 	 * equals the sentinel.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 * @return array
 	 */
 	public static function get_social_settings_with_masked_secret() {
@@ -119,7 +119,7 @@ class Admin_Helper {
 	/**
 	 * Get Visibility Page
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 * @return boolean|array
 	 */
 	public static function get_visibility_page() {

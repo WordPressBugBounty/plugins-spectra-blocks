@@ -27,7 +27,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Class EventTracker.
  *
- * @since 0.0.9
+ * @since 1.0.0
  */
 class EventTracker {
 
@@ -56,7 +56,7 @@ class EventTracker {
 	/**
 	 * Register hooks. Called from the plugin loader.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 * @return void
 	 */
 	public function init() {
@@ -82,7 +82,7 @@ class EventTracker {
 	/**
 	 * Track plugin activation event.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 * @return void
 	 */
 	public function track_plugin_activated() {
@@ -109,7 +109,7 @@ class EventTracker {
 	/**
 	 * Days since the plugin was first installed.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 * @return int
 	 */
 	private static function get_days_since_install() {
@@ -123,7 +123,7 @@ class EventTracker {
 	/**
 	 * Track analytics opt-in/opt-out event.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 * @param string $old_value Old value.
 	 * @param string $new_value New value.
 	 * @return void
@@ -137,7 +137,7 @@ class EventTracker {
 	/**
 	 * Track first time a Spectra block is used in a post.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 * @param int      $post_id Post ID.
 	 * @param \WP_Post $post    Post object.
 	 * @return void
@@ -178,7 +178,7 @@ class EventTracker {
 	/**
 	 * Capture the plugin version before an update overwrites it.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 * @return void
 	 */
 	public function capture_pre_update_version() {
@@ -189,7 +189,7 @@ class EventTracker {
 	/**
 	 * Track plugin version update event.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 * @return void
 	 */
 	public function track_plugin_updated() {
@@ -204,7 +204,7 @@ class EventTracker {
 	/**
 	 * Track changes to allow-listed settings. Sends the KEY only, never the value.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 * @param mixed  $old_value Previous value (unused).
 	 * @param mixed  $new_value New value (unused).
 	 * @param string $option    Option name.
@@ -230,7 +230,7 @@ class EventTracker {
 	 *
 	 * Throttled to run once per 24 hours via transient.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 * @return void
 	 */
 	public function detect_state_events() {
@@ -250,7 +250,7 @@ class EventTracker {
 	/**
 	 * Detect if Spectra Pro is active.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 * @return void
 	 */
 	private function detect_spectra_pro_activated() {
@@ -271,7 +271,7 @@ class EventTracker {
 	/**
 	 * Detect first use of AI assistant via the Zip AI library.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 * @return void
 	 */
 	private function detect_ai_assistant_first_use() {
@@ -295,7 +295,7 @@ class EventTracker {
 	/**
 	 * Detect if onboarding has been completed.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 * @return void
 	 */
 	private function detect_onboarding_completed() {
@@ -329,7 +329,7 @@ class EventTracker {
 	/**
 	 * Track first template import via AJAX hook from Gutenberg Templates lib.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 * @return void
 	 */
 	public function track_first_template_imported() {
@@ -339,7 +339,7 @@ class EventTracker {
 	/**
 	 * Track first pattern (block) import via AJAX hook.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 * @return void
 	 */
 	public function track_first_pattern_imported() {
@@ -349,7 +349,7 @@ class EventTracker {
 	/**
 	 * Detect if a Spectra form block has been created.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 * @return void
 	 */
 	private function detect_first_form_created() {
@@ -373,7 +373,7 @@ class EventTracker {
 	/**
 	 * Detect if a Spectra popup has been created.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 * @return void
 	 */
 	private function detect_first_popup_created() {
@@ -395,7 +395,7 @@ class EventTracker {
 	/**
 	 * Track onboarding completion from the `one_onboarding_completion_spectra` hook.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 * @param array                 $completion_data Completion payload from the REST endpoint.
 	 * @param \WP_REST_Request|null $request         The REST request (unused).
 	 * @return void
@@ -416,7 +416,7 @@ class EventTracker {
 	/**
 	 * Build the property bag for onboarding_completed from completion data.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 * @param array $completion_data Payload from one_onboarding_completion_spectra.
 	 * @return array
 	 */
@@ -473,7 +473,7 @@ class EventTracker {
 	/**
 	 * Track onboarding exits via the `one_onboarding_state_saved_spectra` hook.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 * @param array                 $state_data Onboarding state from the REST endpoint.
 	 * @param \WP_REST_Request|null $request    The REST request (unused).
 	 * @return void

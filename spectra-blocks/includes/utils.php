@@ -34,7 +34,11 @@ function spectra_get_v3_blocks_css_for_preview( $post_id ) {
 
 	$css_generator = new Spectra_CSS_Generator();
 
-	return $css_generator->generate_preview_css( $post_id, $blocks );
+	\SpectraBlocks\Extensions\ResponsiveControls::$is_pattern_preview = true;
+	$css = $css_generator->generate_preview_css( $post_id, $blocks );
+	\SpectraBlocks\Extensions\ResponsiveControls::$is_pattern_preview = false;
+
+	return $css;
 }
 
 /**
@@ -555,7 +559,10 @@ class Spectra_CSS_Generator {
 
 			$attrs      = $block['attrs'] ?? array();
 			$block_name = $block['blockName'];
-			$spectra_id = $attrs['spectraId'] ?? 'spectra-preview-' . wp_generate_uuid4();
+			$spectra_id = \SpectraBlocks\Helpers\Core::sanitize_spectra_id( $attrs['spectraId'] ?? '' );
+			if ( empty( $spectra_id ) ) {
+				$spectra_id = 'spectra-preview-' . wp_generate_uuid4();
+			}
 
 			// Determine which ResponsiveControls instance to use.
 			// This checks for Spectra blocks, Pro blocks, AND any core blocks that have responsive control support.
@@ -823,7 +830,7 @@ function spectra_process_blocks_for_comprehensive_css( $blocks, $responsive_cont
 
 		// Generate CSS for Spectra blocks (v3 and Pro v2).
 		if ( strpos( $block_name, 'spectra/' ) === 0 || strpos( $block_name, 'spectra-pro/' ) === 0 ) {
-			$spectra_id = $attrs['spectraId'] ?? '';
+			$spectra_id = \SpectraBlocks\Helpers\Core::sanitize_spectra_id( $attrs['spectraId'] ?? '' );
 
 			// Ensure block has a spectraId for CSS generation.
 			if ( empty( $spectra_id ) ) {
@@ -957,7 +964,7 @@ function spectra_process_blocks_for_attribute_css( $blocks ) {
 		}
 
 		$attrs      = $block['attrs'] ?? array();
-		$spectra_id = $attrs['spectraId'] ?? '';
+		$spectra_id = \SpectraBlocks\Helpers\Core::sanitize_spectra_id( $attrs['spectraId'] ?? '' );
 		$block_name = $block['blockName'];
 
 		if ( empty( $spectra_id ) ) {

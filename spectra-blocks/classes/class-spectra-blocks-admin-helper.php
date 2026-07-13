@@ -77,7 +77,7 @@ if ( ! class_exists( 'Spectra_Blocks_Admin_Helper' ) ) {
 		 * receives the sentinel must interpret it as "user did not re-enter the
 		 * secret" and skip the write.
 		 *
-		 * @since 0.0.9
+		 * @since 1.0.0
 		 */
 		const SECRET_MASK = '****';
 
@@ -91,7 +91,7 @@ if ( ! class_exists( 'Spectra_Blocks_Admin_Helper' ) ) {
 		 *
 		 * @param mixed $raw The raw value read from storage.
 		 * @return string Sentinel or empty string.
-		 * @since 0.0.9
+		 * @since 1.0.0
 		 */
 		public static function mask_secret_value( $raw ) {
 			return ( is_string( $raw ) && '' !== $raw ) ? self::SECRET_MASK : '';

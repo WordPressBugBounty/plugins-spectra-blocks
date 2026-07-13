@@ -119,7 +119,7 @@ class BlockUsageTracker {
 	/**
 	 * Remove post from usage data when Spectra blocks are removed.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @param int $post_id Post ID.
 	 */
@@ -144,7 +144,7 @@ class BlockUsageTracker {
 	/**
 	 * Count valid (non-trashed, existing) posts in usage data.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @param array<int|string, mixed> $usage_data Usage data array.
 	 * @return int Count of valid posts.
@@ -174,7 +174,7 @@ class BlockUsageTracker {
 	/**
 	 * Remove analytics data for a deleted post.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @param int $post_id Post ID being deleted.
 	 */
@@ -203,7 +203,7 @@ class BlockUsageTracker {
 	/**
 	 * Handle post being moved to trash.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @param int $post_id Post ID being trashed.
 	 */
@@ -231,7 +231,7 @@ class BlockUsageTracker {
 	/**
 	 * Handle post being restored from trash.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @param int $post_id Post ID being restored.
 	 */
@@ -263,7 +263,7 @@ class BlockUsageTracker {
 	 * Only tracks blocks that users can see and insert from the block inserter,
 	 * not child blocks or inner blocks that are auto-generated.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @param array<int|string, mixed> $blocks Parsed blocks array.
 	 * @return array<int, string> Array of root-level Spectra block names found.
@@ -479,7 +479,7 @@ class BlockUsageTracker {
 	/**
 	 * Get site activity level based on Spectra block edits in the last 180 days.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @return array Site activity data with classification.
 	 */
@@ -527,7 +527,7 @@ class BlockUsageTracker {
 	/**
 	 * Add Spectra 3 statistics to BSF Analytics data.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @param array $stats Existing BSF Analytics stats.
 	 * @return array Enhanced stats with Spectra 3 data.

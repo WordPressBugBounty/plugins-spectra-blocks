@@ -17,14 +17,14 @@ defined( 'ABSPATH' ) || exit;
 /**
  * ListPopups ability class.
  *
- * @since 0.0.9
+ * @since 1.0.0
  */
 class ListPopups extends AbstractAbility {
 
 	/**
 	 * Get the ability name.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @return string
 	 */
@@ -35,7 +35,7 @@ class ListPopups extends AbstractAbility {
 	/**
 	 * Get the ability label.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @return string
 	 */
@@ -46,7 +46,7 @@ class ListPopups extends AbstractAbility {
 	/**
 	 * Get the ability description.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @return string
 	 */
@@ -57,7 +57,7 @@ class ListPopups extends AbstractAbility {
 	/**
 	 * Get the ability category.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @return string
 	 */
@@ -68,7 +68,7 @@ class ListPopups extends AbstractAbility {
 	/**
 	 * Get ability annotations for REST discovery.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @return array
 	 */
@@ -83,7 +83,7 @@ class ListPopups extends AbstractAbility {
 	/**
 	 * Get the input schema.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @return array
 	 */
@@ -114,7 +114,7 @@ class ListPopups extends AbstractAbility {
 	/**
 	 * Get the output schema.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @return array
 	 */
@@ -149,7 +149,7 @@ class ListPopups extends AbstractAbility {
 	 *
 	 * Requires manage_options since popup CPT requires it.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @return bool|WP_Error
 	 */
@@ -168,7 +168,7 @@ class ListPopups extends AbstractAbility {
 	/**
 	 * Execute the ability.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @param array $params Input parameters.
 	 * @return array List of popups.

@@ -28,7 +28,7 @@ $final_background_gradient = Core::get_advanced_gradient_value(
 
 // Get background attributes.
 $background = $attributes['background'] ?? null;
-$dim_ratio  = ( isset( $attributes['dimRatio'] ) ? ( $attributes['dimRatio'] / 100 ) : 100 );
+$dim_ratio  = ( isset( $attributes['dimRatio'] ) ? ( $attributes['dimRatio'] / 100 ) : 1 );
 $overflow   = $attributes['overflow'] ?? '';
 $style      = $attributes['style'] ?? array();
 
@@ -81,8 +81,9 @@ $additional_classes = array(
 	// These classes are used for overflow handling with border-radius.
 	$has_video_background ? 'has-video-background' : '',
 	( $has_image_background || $has_responsive_image ) ? 'has-image-background' : '',
-	// Add overlay class when overlay is used.
-	( $background_color || $final_background_gradient ) ? 'spectra-background-overlay' : '',
+	// Only add overlay class when an actual background (image/video) warrants it.
+	// Empty or 'none' type means solid color — no overlay layer needed.
+	( ( $background_color || $final_background_gradient ) && '' !== $background_type && 'none' !== $background_type ) ? 'spectra-background-overlay' : '',
 	// Add background image class.
 	( 'image' === $background_type || $has_responsive_image ) ? 'spectra-background-image' : '',
 	'spectra-overlay-color',

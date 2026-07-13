@@ -20,7 +20,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Class Events.
  *
- * @since 0.0.9
+ * @since 1.0.0
  */
 class Events {
 
@@ -41,7 +41,7 @@ class Events {
 	/**
 	 * Queue a one-time event for the next analytics cycle.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 * @param string $event_name  Unique event identifier.
 	 * @param string $event_value Optional primary value (version, ID, mode).
 	 * @param array  $properties  Optional key-value pairs for extra context.
@@ -89,7 +89,7 @@ class Events {
 	 * Moves event names to the pushed list (persistent dedup)
 	 * and deletes the full event payloads.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 * @return array Array of event objects to send, or empty array.
 	 */
 	public static function flush_pending() {
@@ -134,7 +134,7 @@ class Events {
 	/**
 	 * Check if an event has already been tracked (pending or pushed).
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 * @param string $event_name Event name to check.
 	 * @return bool
 	 */
@@ -161,7 +161,7 @@ class Events {
 	/**
 	 * Remove specific events from the pushed dedup list so they can be re-tracked.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 * @param array $event_names Event names to remove. Empty array clears all.
 	 * @return void
 	 */
@@ -185,7 +185,7 @@ class Events {
 	/**
 	 * Clear a single event from both pushed and pending queues.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 * @param string $event_name Event to clear.
 	 * @return void
 	 */
@@ -217,7 +217,7 @@ class Events {
 	 * fresh. Ensures only one entry exists per event_name so the server
 	 * always receives the latest state instead of accumulated duplicates.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 * @param string $event_name  Event identifier.
 	 * @param string $event_value Primary value (version, mode, status).
 	 * @param array  $properties  Cumulative state as key-value pairs.

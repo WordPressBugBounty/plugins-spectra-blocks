@@ -2,7 +2,7 @@
 /**
  * Controller for the Post Template block.
  *
- * @since 0.0.9
+ * @since 1.0.0
  * @package Spectra\Blocks\PostTemplate
  */
 
@@ -69,7 +69,7 @@ while ( $query->have_posts() ) {
 	/**
 	 * Filter the CSS classes for the post item.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 * @param array    $post_classes    The array of CSS classes.
 	 * @param int      $current_post_id The current post ID.
 	 * @param WP_Block $block           The block instance.

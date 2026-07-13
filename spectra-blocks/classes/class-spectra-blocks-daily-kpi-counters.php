@@ -12,7 +12,7 @@
  *
  * @package SpectraBlocks
  *
- * @since 0.0.9
+ * @since 1.0.0
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -57,7 +57,7 @@ class Spectra_Blocks_Daily_KPI_Counters {
 	/**
 	 * Return the singleton instance.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 * @return self
 	 */
 	public static function get_instance() {
@@ -94,7 +94,7 @@ class Spectra_Blocks_Daily_KPI_Counters {
 	 * On real "any → publish" transitions, increment the daily publish counter
 	 * and record any advanced features present in the post content.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @param string   $new_status New post status.
 	 * @param string   $old_status Previous post status.
@@ -117,7 +117,7 @@ class Spectra_Blocks_Daily_KPI_Counters {
 	 * On every save of a published post, merge the distinct Spectra block types
 	 * used in the content into today's daily bucket.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @param int      $post_id Post ID.
 	 * @param \WP_Post $post    The post object.
@@ -140,7 +140,7 @@ class Spectra_Blocks_Daily_KPI_Counters {
 	/**
 	 * Record GBS advanced feature when the option is updated.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 */
 	public function on_gbs_changed() {
 		$this->record_advanced_feature( 'gbs' );
@@ -149,7 +149,7 @@ class Spectra_Blocks_Daily_KPI_Counters {
 	/**
 	 * Record GBS advanced feature when the option is first created.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 */
 	public function on_gbs_added() {
 		$this->record_advanced_feature( 'gbs' );
@@ -162,7 +162,7 @@ class Spectra_Blocks_Daily_KPI_Counters {
 	/**
 	 * Return the last N days of data for a given rolling-bucket option.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @param string $option_key One of the OPT_* constants.
 	 * @param int    $days       Number of days to return (default: RETENTION_DAYS).
@@ -189,7 +189,7 @@ class Spectra_Blocks_Daily_KPI_Counters {
 	 * Result is cached for one hour — this method is only called at BSF Analytics
 	 * send time (typically once per day) so a direct DB query is acceptable.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 * @return int
 	 */
 	public function get_pages_with_spectra() {
@@ -329,7 +329,7 @@ class Spectra_Blocks_Daily_KPI_Counters {
 	/**
 	 * Append KPI records, user segment, and pages_with_spectra to the BSF Analytics payload.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @param array<string, mixed> $stats Existing stats array.
 	 * @return array<string, mixed>

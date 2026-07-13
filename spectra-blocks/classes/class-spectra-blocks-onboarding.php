@@ -3,9 +3,9 @@
  * Spectra Blocks Onboarding.
  *
  * Registers Spectra Blocks with the One Onboarding library and handles
- * completion hooks for analytics, consent, and lead capture. Registers
- * only when UAGB is NOT active to avoid double-registration on a single
- * site (UAGB owns the same `spectra` product slug in One Onboarding).
+ * completion hooks for analytics, consent, and lead capture. Uses the
+ * `spectra-blocks` product slug (distinct from UAGB's `spectra` slug) so
+ * both plugins can coexist on the same site without onboarding conflicts.
  *
  * Ported from UAGB_Onboarding with the following adaptations:
  *   - Class prefix: Spectra_Blocks_*
@@ -24,7 +24,7 @@ if ( ! class_exists( 'Spectra_Blocks_Onboarding' ) ) {
 	/**
 	 * Class Spectra_Blocks_Onboarding.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 */
 	class Spectra_Blocks_Onboarding {
 
@@ -38,7 +38,7 @@ if ( ! class_exists( 'Spectra_Blocks_Onboarding' ) ) {
 		/**
 		 * Get instance.
 		 *
-		 * @since 0.0.9
+		 * @since 1.0.0
 		 * @return Spectra_Blocks_Onboarding
 		 */
 		public static function get_instance() {
@@ -51,7 +51,7 @@ if ( ! class_exists( 'Spectra_Blocks_Onboarding' ) ) {
 		/**
 		 * Constructor.
 		 *
-		 * @since 0.0.9
+		 * @since 1.0.0
 		 */
 		private function __construct() {
 			add_action( 'init', array( $this, 'register_onboarding' ), 15 );
@@ -67,7 +67,7 @@ if ( ! class_exists( 'Spectra_Blocks_Onboarding' ) ) {
 		 * clears it, and sends the user to the onboarding page. Skipped on
 		 * multisite and when the user already completed onboarding.
 		 *
-		 * @since 0.0.9
+		 * @since 1.0.0
 		 * @return void
 		 */
 		public function maybe_redirect_to_onboarding() {
@@ -91,14 +91,14 @@ if ( ! class_exists( 'Spectra_Blocks_Onboarding' ) ) {
 				return;
 			}
 
-			wp_safe_redirect( admin_url( 'admin.php?page=spectra-onboarding' ) );
+			wp_safe_redirect( admin_url( 'admin.php?page=spectra-blocks-onboarding' ) );
 			exit;
 		}
 
 		/**
 		 * Register Spectra Blocks with One Onboarding.
 		 *
-		 * @since 0.0.9
+		 * @since 1.0.0
 		 * @return void
 		 */
 		public function register_onboarding() {
@@ -109,33 +109,32 @@ if ( ! class_exists( 'Spectra_Blocks_Onboarding' ) ) {
 			$plugin_url = plugins_url( '/', SPECTRA_BLOCKS_FILE );
 
 			\One_Onboarding\Core\Register::register_product(
-				'spectra',
+				'spectra-blocks',
 				array(
-					'title'       => __( 'Spectra Onboarding', 'spectra-blocks' ),
+					'title'       => __( 'Spectra Blocks Onboarding', 'spectra-blocks' ),
 					'product'     => array(
-						'id'   => 'spectra',
-						'name' => __( 'Spectra', 'spectra-blocks' ),
+						'id'   => 'spectra-blocks',
+						'name' => __( 'Spectra Blocks', 'spectra-blocks' ),
 					),
 					'logo'        => $plugin_url . 'admin/assets/images/spectra-onboarding-logo.svg',
 					'screens'     => array(
 						'welcome'   => array(
-							'heading'     => __( 'Welcome to Spectra', 'spectra-blocks' ),
+							'heading'     => __( 'Welcome to Spectra Blocks', 'spectra-blocks' ),
 							'description' => __( 'Build a fast, beautiful WordPress site—effortlessly.', 'spectra-blocks' ),
 							'banner'      => array(
 								'type'      => 'video',
 								'url'       => 'https://www.youtube-nocookie.com/embed/y_tsLWV6QRM?showinfo=0&autoplay=1&modestbranding=1&rel=0',
-								'title'     => __( 'Getting Started with Spectra', 'spectra-blocks' ),
+								'title'     => __( 'Getting Started with Spectra Blocks', 'spectra-blocks' ),
 								'thumbnail' => $plugin_url . 'assets/images/onboarding-video-bg.png',
 							),
 							'items'       => array(
-								__( 'Trusted by 1.8M+ websites worldwide', 'spectra-blocks' ),
 								__( 'Import ready-made patterns & templates', 'spectra-blocks' ),
 								__( 'Easy customization—no coding or design skills', 'spectra-blocks' ),
 								__( 'Drag & Drop blocks to build your layout', 'spectra-blocks' ),
 							),
 						),
 						'user-info' => array(
-							'description'    => __( 'Get helpful updates, new features, and tips to make your website better—while helping us improve Spectra.', 'spectra-blocks' ),
+							'description'    => __( 'Get helpful updates, new features, and tips to make your website better—while helping us improve Spectra Blocks.', 'spectra-blocks' ),
 							'sourceOptions'  => array(
 								'wordpress' => __( 'WordPress Plugin Directory', 'spectra-blocks' ),
 								'google'    => __( 'Google Search', 'spectra-blocks' ),
@@ -156,12 +155,12 @@ if ( ! class_exists( 'Spectra_Blocks_Onboarding' ) ) {
 								'label' => __( 'Privacy Policy', 'spectra-blocks' ),
 							),
 							'optIn'          => array(
-								'description'  => __( 'Stay in the loop and help shape Spectra! Get feature updates, and help us build a better Spectra by sharing how you use the plugin.', 'spectra-blocks' ),
+								'description'  => __( 'Stay in the loop and help shape Spectra Blocks! Get feature updates, and help us build a better Spectra Blocks by sharing how you use the plugin.', 'spectra-blocks' ),
 								'learnMoreUrl' => 'https://store.brainstormforce.com/usage-tracking/?utm_source=spectra_dashboard&utm_medium=onboarding&utm_campaign=link',
 							),
 						),
 						'features'  => array(
-							'description' => __( 'Enable the features you need to design faster and build better with Spectra.', 'spectra-blocks' ),
+							'description' => __( 'Enable the features you need to design faster and build better with Spectra Blocks.', 'spectra-blocks' ),
 							'featureList' => self::get_feature_list(),
 							'upgradeUrl'  => 'https://wpspectra.com/pricing/?utm_source=spectra_dashboard&utm_medium=onboarding&utm_campaign=pro-features',
 						),
@@ -198,14 +197,14 @@ if ( ! class_exists( 'Spectra_Blocks_Onboarding' ) ) {
 				)
 			);
 
-			add_action( 'one_onboarding_completion_spectra', array( $this, 'handle_onboarding_completion' ), 10, 2 );
+			add_action( 'one_onboarding_completion_spectra-blocks', array( $this, 'handle_onboarding_completion' ), 10, 2 );
 			add_action( 'one_onboarding_plugin_activated', array( $this, 'handle_plugin_activated' ) );
 		}
 
 		/**
 		 * Get Spectra Pro plugin status.
 		 *
-		 * @since 0.0.9
+		 * @since 1.0.0
 		 * @return string
 		 */
 		private static function get_pro_status() {
@@ -228,7 +227,7 @@ if ( ! class_exists( 'Spectra_Blocks_Onboarding' ) ) {
 		/**
 		 * Handle onboarding completion.
 		 *
-		 * @since 0.0.9
+		 * @since 1.0.0
 		 * @param array            $completion_data Onboarding state, user info, product details.
 		 * @param \WP_REST_Request $request         REST request object (unused).
 		 * @return void
@@ -281,7 +280,7 @@ if ( ! class_exists( 'Spectra_Blocks_Onboarding' ) ) {
 		/**
 		 * Handle plugin activation from onboarding add-ons step.
 		 *
-		 * @since 0.0.9
+		 * @since 1.0.0
 		 * @param string $slug Plugin slug.
 		 * @return void
 		 */
@@ -298,7 +297,7 @@ if ( ! class_exists( 'Spectra_Blocks_Onboarding' ) ) {
 		/**
 		 * Check if onboarding has been completed.
 		 *
-		 * @since 0.0.9
+		 * @since 1.0.0
 		 * @return bool
 		 */
 		public static function is_onboarding_completed() {
@@ -309,7 +308,7 @@ if ( ! class_exists( 'Spectra_Blocks_Onboarding' ) ) {
 		/**
 		 * Get feature list for the features step.
 		 *
-		 * @since 0.0.9
+		 * @since 1.0.0
 		 * @return array<int, array<string, mixed>>
 		 */
 		public static function get_feature_list() {
@@ -370,7 +369,7 @@ if ( ! class_exists( 'Spectra_Blocks_Onboarding' ) ) {
 		/**
 		 * Get addon SVG icons.
 		 *
-		 * @since 0.0.9
+		 * @since 1.0.0
 		 * @return array<string, string>
 		 */
 		private static function get_addon_icons() {
@@ -385,7 +384,7 @@ if ( ! class_exists( 'Spectra_Blocks_Onboarding' ) ) {
 		/**
 		 * Get add-on list for the add-ons step.
 		 *
-		 * @since 0.0.9
+		 * @since 1.0.0
 		 * @return array<int, array<string, string>>
 		 */
 		public static function get_addon_list() {
@@ -422,7 +421,7 @@ if ( ! class_exists( 'Spectra_Blocks_Onboarding' ) ) {
 		/**
 		 * Send lead data to BSF metrics server.
 		 *
-		 * @since 0.0.9
+		 * @since 1.0.0
 		 * @param array<string, mixed> $user_info User info from onboarding.
 		 * @return void
 		 */
@@ -459,7 +458,7 @@ if ( ! class_exists( 'Spectra_Blocks_Onboarding' ) ) {
 		/**
 		 * Get onboarding analytics data for bsf_core_stats payload.
 		 *
-		 * @since 0.0.9
+		 * @since 1.0.0
 		 * @return array<string, mixed>
 		 */
 		public static function get_onboarding_analytics_data() {
@@ -493,7 +492,7 @@ if ( ! class_exists( 'Spectra_Blocks_Onboarding' ) ) {
 		/**
 		 * Register personal data exporter for GDPR.
 		 *
-		 * @since 0.0.9
+		 * @since 1.0.0
 		 * @param array<string, array<string, mixed>> $exporters Registered exporters.
 		 * @return array<string, array<string, mixed>>
 		 */
@@ -508,7 +507,7 @@ if ( ! class_exists( 'Spectra_Blocks_Onboarding' ) ) {
 		/**
 		 * Register personal data eraser for GDPR.
 		 *
-		 * @since 0.0.9
+		 * @since 1.0.0
 		 * @param array<string, array<string, mixed>> $erasers Registered erasers.
 		 * @return array<string, array<string, mixed>>
 		 */
@@ -523,7 +522,7 @@ if ( ! class_exists( 'Spectra_Blocks_Onboarding' ) ) {
 		/**
 		 * Export personal data collected during onboarding.
 		 *
-		 * @since 0.0.9
+		 * @since 1.0.0
 		 * @param string $email_address Email address to export data for.
 		 * @return array{data: array<int, array<string, mixed>>, done: bool}
 		 */
@@ -563,7 +562,7 @@ if ( ! class_exists( 'Spectra_Blocks_Onboarding' ) ) {
 		/**
 		 * Erase personal data collected during onboarding.
 		 *
-		 * @since 0.0.9
+		 * @since 1.0.0
 		 * @param string $email_address Email address to erase data for.
 		 * @return array{items_removed: int, items_retained: int, messages: array<string>, done: bool}
 		 */

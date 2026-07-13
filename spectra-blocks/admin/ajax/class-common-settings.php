@@ -77,8 +77,6 @@ class Common_Settings extends Ajax_Base {
 			'zip_ai_verify_authenticity',
 			'install_zip_ai',
 			'activate_zip_ai',
-			'get_zip_ai_credits',
-			'get_fresh_zip_ai_credits',
 			'enable_bsf_analytics_option',
 			'clear_v3_cache',
 			'disable_css_cache',
@@ -814,72 +812,6 @@ class Common_Settings extends Ajax_Base {
 		wp_send_json_success( array( 'status' => 'activated' ) );
 	}
 
-	/**
-	 * Fetch credit usage from the ERA zip-ai SaaS API.
-	 *
-	 * @since 0.0.9
-	 * @return void
-	 */
-	public function get_zip_ai_credits() {
-		$this->check_permission_nonce( 'spectra_blocks_get_zip_ai_credits' );
-
-		if ( ! defined( 'ZIPAI_MCP_CREDIT_SERVER_API' )
-			|| ! class_exists( '\ZipAI\MCP\Classes\Core\Helper' )
-			|| ! \ZipAI\MCP\Classes\Core\Helper::is_authorized()
-		) {
-			wp_send_json_error( array( 'message' => __( 'Zip AI is not connected.', 'spectra-blocks' ) ) );
-		}
-
-		$token = \ZipAI\MCP\Classes\Core\Helper::get_decrypted_auth_token();
-		if ( empty( $token ) ) {
-			wp_send_json_error( array( 'message' => __( 'No auth token found.', 'spectra-blocks' ) ) );
-		}
-
-		$response = wp_remote_post(
-			ZIPAI_MCP_CREDIT_SERVER_API . 'auth/validate',
-			array(
-				'headers' => array(
-					'Content-Type'  => 'application/json',
-					'Accept'        => 'application/json',
-					'Authorization' => 'Bearer ' . $token,
-				),
-				'body'    => wp_json_encode( array() ),
-				'timeout' => 15,
-			)
-		);
-
-		if ( is_wp_error( $response ) ) {
-			wp_send_json_error( array( 'message' => $response->get_error_message() ) );
-		}
-
-		$data = json_decode( wp_remote_retrieve_body( $response ), true );
-
-		$available = isset( $data['credits']['available'] ) ? (int) $data['credits']['available'] : 0;
-		$total     = isset( $data['credits']['total'] ) ? (int) $data['credits']['total'] : 0;
-
-		wp_send_json_success(
-			array(
-				'used'  => $total - $available,
-				'total' => $total,
-			)
-		);
-	}
-
-	/**
-	 * Ajax Request - Fetch fresh credit details (bypasses transient cache).
-	 *
-	 * @since 0.0.9
-	 * @return void
-	 */
-	public function get_fresh_zip_ai_credits() {
-		$this->check_permission_nonce( 'spectra_blocks_get_fresh_credits' );
-
-		if ( ! Admin_Menu::is_zip_ai_authorized() ) {
-			wp_send_json_error( array( 'message' => __( 'Zip AI is not connected.', 'spectra-blocks' ) ) );
-		}
-
-		wp_send_json_success( Admin_Menu::get_zip_ai_credit_details( true ) );
-	}
 
 	/**
 	 * Save setting - Usage data.
@@ -921,12 +853,16 @@ class Common_Settings extends Ajax_Base {
 		$this->check_permission_nonce( 'spectra_blocks_clear_v3_cache' );
 
 		// Delete all Spectra responsive CSS transients.
-		// These transients follow the pattern: spectra_responsive_css_{$spectra_id}_{version}.
+		// These transients follow the pattern:
+		// spectra_blocks_responsive_css_{$spectra_id}_{version}_g{generator} — see
+		// ResponsiveControls::get_cached_responsive_css(). The prefix MUST match
+		// that key exactly (including the `blocks_` segment) or the LIKE matches
+		// nothing and the cache is never actually cleared.
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Bulk deletion of transients requires direct query for performance; caching not applicable for DELETE operations.
 		$wpdb->query(
 			$wpdb->prepare(
 				"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s",
-				$wpdb->esc_like( '_transient_spectra_responsive_css_' ) . '%'
+				$wpdb->esc_like( '_transient_spectra_blocks_responsive_css_' ) . '%'
 			)
 		);
 
@@ -935,7 +871,7 @@ class Common_Settings extends Ajax_Base {
 		$wpdb->query(
 			$wpdb->prepare(
 				"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s",
-				$wpdb->esc_like( '_transient_timeout_spectra_responsive_css_' ) . '%'
+				$wpdb->esc_like( '_transient_timeout_spectra_blocks_responsive_css_' ) . '%'
 			)
 		);
 

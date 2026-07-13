@@ -23,6 +23,30 @@ class AssetLoader {
 	use Singleton;
 
 	/**
+	 * Body class added to zip-built (imported) pages on the frontend + admin.
+	 *
+	 * @var string
+	 */
+	const ZIP_BUILDER_BODY_CLASS = 'spectra-page-zip-builder';
+
+	/**
+	 * Marker meta the ERA importer sets on every page it writes — the
+	 * explicit source of truth for "this page is imported" (drives the
+	 * zip-builder body class, frontend + editor). Detection previously
+	 * inferred importedness from the free engine's V2 per-page CSS payload
+	 * (`GenCssOrphanStripper::read_page_payload`), but that store is
+	 * DEPRECATED (GBS store is SSOT; page scope = class index + global
+	 * definitions), so the inference never fired on current-flow imports
+	 * (measured 2026-07-02: body class absent on a fresh import). An
+	 * explicit marker survives any future CSS-storage refactor.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @var string
+	 */
+	const IMPORTED_MARKER_META_KEY = '_zipai_imported';
+
+	/**
 	 * Initializes the asset loader by setting up necessary components.
 	 *
 	 * @since 3.0.0
@@ -39,8 +63,115 @@ class AssetLoader {
 		add_action( 'wp_enqueue_scripts', array( $this, 'handle_frontend_assets' ) );
 		add_action( 'enqueue_block_assets', array( $this, 'enqueue_extensions_frontend_assets' ) );
 
+		// Tag zip-built (imported) pages with a body class on both the frontend
+		// and the admin editor screen, so page-level CSS can scope overrides to
+		// imported content (see src/styles/blocks/common.scss).
+		add_filter( 'body_class', array( $this, 'add_zip_builder_body_class' ) );
+		add_filter( 'admin_body_class', array( $this, 'add_zip_builder_admin_body_class' ) );
+
+		// Import-marker meta (the body-class detector's source of truth) —
+		// registered so the importer can set it over REST at page-write time.
+		add_action( 'init', array( $this, 'register_import_marker_meta' ) );
+
 		// Load utility functions for GT integration.
 		$this->load_gt_utils();
+	}
+
+	/**
+	 * Frontend: append the zip-builder marker to the <body> class list on
+	 * imported (zip-built) singular views.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array<int, string> $classes Existing body classes.
+	 * @return array<int, string> Possibly-extended body classes.
+	 */
+	public function add_zip_builder_body_class( $classes ) {
+		$post_id = is_singular() ? get_queried_object_id() : 0;
+
+		if ( $post_id && self::is_zip_built_page( (int) $post_id ) ) {
+			$classes[] = self::ZIP_BUILDER_BODY_CLASS;
+		}
+
+		return $classes;
+	}
+
+	/**
+	 * Admin: append the zip-builder marker to the admin <body> class on the
+	 * post-edit screen for an imported page. `admin_body_class` passes a
+	 * space-joined string (not an array), so we concatenate.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $classes Space-separated admin body classes.
+	 * @return string Possibly-extended admin body classes.
+	 */
+	public function add_zip_builder_admin_body_class( $classes ) {
+		$post_id = isset( $GLOBALS['post']->ID ) ? (int) $GLOBALS['post']->ID : 0;
+
+		if ( ! $post_id ) {
+			// Display-only body class — no state change, so no nonce needed.
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$post_id = isset( $_GET['post'] ) ? absint( wp_unslash( $_GET['post'] ) ) : 0;
+		}
+
+		if ( $post_id && self::is_zip_built_page( $post_id ) ) {
+			$classes .= ' ' . self::ZIP_BUILDER_BODY_CLASS;
+		}
+
+		return $classes;
+	}
+
+	/**
+	 * Whether a post was produced by the zip builder — the importer sets
+	 * {@see self::IMPORTED_MARKER_META_KEY} on every page it writes, and
+	 * that marker is the sole detection signal (the old per-page Gen CSS
+	 * payload inference is retired with its deprecated store). Cached per
+	 * request.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $post_id Post ID.
+	 * @return bool Whether the page is zip-built.
+	 */
+	private static function is_zip_built_page( int $post_id ): bool {
+		static $cache = array();
+
+		if ( ! isset( $cache[ $post_id ] ) ) {
+			// Explicit importer-set marker (see IMPORTED_MARKER_META_KEY doc).
+			// The previous detector inferred importedness from the deprecated
+			// V2 per-page CSS payload and never fired on current-flow imports.
+			$cache[ $post_id ] = (bool) get_post_meta( $post_id, self::IMPORTED_MARKER_META_KEY, true );
+		}
+
+		return $cache[ $post_id ];
+	}
+
+	/**
+	 * Register the import-marker meta so the ERA importer can set it over
+	 * REST when it writes a page. Boolean, single, protected key — the
+	 * auth callback gates writes to users who can edit the post, which is
+	 * the capability the importer's application password already carries.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	public function register_import_marker_meta() {
+		register_post_meta(
+			'page',
+			self::IMPORTED_MARKER_META_KEY,
+			array(
+				'type'          => 'boolean',
+				'description'   => __( 'Set by the ERA importer on imported pages; drives the zip-builder body class.', 'spectra-blocks' ),
+				'single'        => true,
+				'default'       => false,
+				'show_in_rest'  => true,
+				'auth_callback' => static function ( $allowed, $meta_key, $post_id ) {
+					return current_user_can( 'edit_post', $post_id );
+				},
+			)
+		);
 	}
 
 	/**
@@ -79,18 +210,38 @@ class AssetLoader {
 		$css_files = glob( $css_path . '**/*.css' ) ?? array();
 
 		foreach ( $css_files as $css_file ) {
-			// Get the parent directory name relative to built styles directory. For example, 'components'.
+			// Namespace = the built sheet's directory under build/styles/ (e.g.
+			// 'blocks', 'extensions', 'components'). Kept intact for the file URL.
 			$relative_path = str_replace( $css_path, '', $css_file );
-			$style_type    = dirname( $relative_path );
+			$style_type    = trim( dirname( $relative_path ), '/' );
 
-			// Extract the file name without the extension and prepend with 'spectra-blocks-' and the directory name.
-			$handle = 'spectra-blocks-' . trim( $style_type, '/' ) . '-' . basename( $css_file, '.css' );
+			// Handle = plugin slug + namespace + file. The `blocks` namespace is
+			// IMPLICIT — the slug is already `spectra-blocks`, so re-appending it
+			// yields a redundant `spectra-blocks-blocks-*` handle no consumer uses.
+			// Block sheets therefore register as `spectra-blocks-<name>`, the handle
+			// every block.json `style` dep and the imported-baseline `global-styles`
+			// guard below rely on. Namespaced sheets keep their segment
+			// (`spectra-blocks-<ns>-<name>`), so a file move never silently breaks a
+			// consumer by mangling its handle.
+			$namespace = ( 'blocks' === $style_type ) ? '' : $style_type . '-';
+			$handle    = 'spectra-blocks-' . $namespace . basename( $css_file, '.css' );
+
+			// The imported-content contract sheet must PRINT after theme.json
+			// output (its clauses win same-tier ties by declared order, not
+			// enqueue luck — see src/styles/blocks/imported-baseline.scss).
+			// Conditional: classic themes have no `global-styles` handle, and
+			// a dependency on an unregistered handle would drop the sheet.
+			$deps = array();
+			if ( 'spectra-blocks-imported-baseline' === $handle
+				&& ( wp_style_is( 'global-styles', 'registered' ) || wp_style_is( 'global-styles', 'enqueued' ) ) ) {
+				$deps[] = 'global-styles';
+			}
 
 			// Register the style.
 			wp_register_style(
 				$handle,
 				plugins_url( 'build/styles/' . trim( $style_type, '/' ) . '/' . basename( $css_file ), SPECTRA_BLOCKS_FILE ),
-				array(),
+				$deps,
 				SPECTRA_BLOCKS_VER
 			);
 		}
@@ -134,7 +285,7 @@ class AssetLoader {
 	/**
 	 * Localize spectra_blocks_info data for block editor scripts.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
@@ -227,7 +378,7 @@ class AssetLoader {
 		// "encountered an error" boundary. Pin Swiper onto `window` so it is
 		// reachable from both module and classic contexts.
 		wp_add_inline_script(
-			'swiper-script',
+			'spectra-blocks-swiper-script',
 			'window.Swiper = window.Swiper || (typeof Swiper !== "undefined" ? Swiper : undefined);',
 			'after'
 		);
@@ -332,7 +483,7 @@ class AssetLoader {
 	/**
 	 * Get the Spectra Blocks upload directory path.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @return string Upload directory path with trailing slash, or empty string on failure.
 	 */
@@ -355,7 +506,7 @@ class AssetLoader {
 	/**
 	 * Get the WP_Filesystem instance.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @return \WP_Filesystem_Base|false Filesystem instance or false on failure.
 	 */

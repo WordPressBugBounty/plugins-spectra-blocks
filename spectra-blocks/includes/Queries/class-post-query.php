@@ -14,7 +14,7 @@ use SpectraBlocks\Traits\Singleton;
  *
  * Helper class for Post block query generation.
  *
- * @since 0.0.9
+ * @since 1.0.0
  */
 class PostQuery {
 
@@ -129,7 +129,7 @@ class PostQuery {
 		/**
 		 * Filter the query arguments for the Post block.
 		 *
-		 * @since 0.0.9
+		 * @since 1.0.0
 		 * @param array $query_args The WP_Query arguments.
 		 * @param array $query_obj  The query attributes object.
 		 * @param array $context    The block context.

@@ -37,68 +37,81 @@ class ResponsiveAttributeCSS {
 	 */
 	const ATTR_DEFINITIONS = array(
 		'spectra/container'                    => array(
-			'minWidth'                => array(
+			'minWidth'                    => array(
 				'property' => 'min-width',
 				'selector' => '.wp-block-spectra-container',
 			),
-			'orientationReverse'      => array(),
-			'minHeight'               => array(
+			'orientationReverse'          => array(),
+			'minHeight'                   => array(
 				'property' => 'min-height',
 				'selector' => '.wp-block-spectra-container',
 			),
-			'maxWidth'                => array(
+			'maxWidth'                    => array(
 				'property' => 'max-width',
 				'selector' => '.wp-block-spectra-container',
 			),
-			'maxHeight'               => array(
+			'maxHeight'                   => array(
 				'property' => 'max-height',
 				'selector' => '.wp-block-spectra-container',
 			),
-			'width'                   => array(
+			'width'                       => array(
 				'property' => 'width',
 				'selector' => '.wp-block-spectra-container',
 			),
-			'height'                  => array(
-				'property' => 'height',
-				'default'  => 'auto',
-				'selector' => '.wp-block-spectra-container',
+			'height'                      => array(
+				'property'   => 'height',
+				'default'    => 'auto',
+				// Reset semantics ONLY: `auto` exists so a height set on one
+				// breakpoint resets on the others. When NO breakpoint authors
+				// a height, emitting it per-block at (0,4,0) silently beats
+				// author/source CSS heights at class specificity (e.g.
+				// Global-Styles `height: 48px` buttons collapsing to content
+				// size). See attr_authored_on_any_device().
+				'reset_only' => true,
+				'selector'   => '.wp-block-spectra-container',
 			),
-			'background'              => array(
+			'background'                  => array(
 				'formatter' => 'format_background',
 			),
-			'overlayType'             => array(
+			'overlayType'                 => array(
 				'formatter' => 'format_overlay_type',
 			),
-			'overlayImage'            => array(
+			'overlayImage'                => array(
 				'formatter' => 'format_overlay_image',
 			),
-			'overlayPosition'         => array(
+			'overlayPosition'             => array(
 				'formatter' => 'format_overlay_position',
 			),
-			'overlayPositionMode'     => array(),
-			'overlayPositionCentered' => array(),
-			'overlayPositionX'        => array(),
-			'overlayPositionY'        => array(),
-			'overlayAttachment'       => array(
+			'overlayPositionMode'         => array(),
+			'overlayPositionCentered'     => array(),
+			'overlayPositionX'            => array(),
+			'overlayPositionY'            => array(),
+			'overlayAttachment'           => array(
 				'formatter' => 'format_overlay_attachment',
 			),
-			'overlayRepeat'           => array(
+			'overlayRepeat'               => array(
 				'formatter' => 'format_overlay_repeat',
 			),
-			'overlaySize'             => array(
+			'overlaySize'                 => array(
 				'formatter' => 'format_overlay_size',
 			),
-			'overlayCustomWidth'      => array(),
-			'overlayBlendMode'        => array(
+			'overlayCustomWidth'          => array(),
+			'overlayBlendMode'            => array(
 				'formatter' => 'format_overlay_blend_mode',
 			),
-			'overlayOpacity'          => array(
+			'overlayOpacity'              => array(
 				'formatter' => 'format_overlay_opacity',
 			),
-			'topWidth'                => array(),
-			'topHeight'               => array(),
-			'bottomWidth'             => array(),
-			'bottomHeight'            => array(),
+			'topWidth'                    => array(),
+			'topHeight'                   => array(),
+			'bottomWidth'                 => array(),
+			'bottomHeight'                => array(),
+			'advBgGradientAngle'          => array(),
+			'advBgGradientLocation1'      => array(),
+			'advBgGradientLocation2'      => array(),
+			'advBgGradientHoverAngle'     => array(),
+			'advBgGradientHoverLocation1' => array(),
+			'advBgGradientHoverLocation2' => array(),
 		),
 		'spectra/content'                      => array(
 			// Text shadow attributes - handled specially in generate_css method.
@@ -439,7 +452,7 @@ class ResponsiveAttributeCSS {
 
 		// Special handling for spectra/modal-popup-content conditional height logic.
 		if ( 'spectra/modal-popup-content' === $block_name ) {
-			$content_height       = $attrs['contentHeight'] ?? 'auto';
+			$content_height       = $attrs['contentHeight'] ?? 'custom';
 			$container_width      = $attrs['containerWidth'] ?? '600px';
 			$container_height     = $attrs['containerHeight'] ?? 'auto';
 			$max_container_height = $attrs['maxContainerHeight'] ?? '';
@@ -584,11 +597,76 @@ class ResponsiveAttributeCSS {
 					'declarations' => $bottom_declarations,
 				);
 			}
+
+			// Handle responsive gradient angle/location overrides for normal gradient.
+			$has_gradient_override = isset( $attrs['advBgGradientAngle'] ) || isset( $attrs['advBgGradientLocation1'] ) || isset( $attrs['advBgGradientLocation2'] );
+			if ( $has_gradient_override ) {
+				$base_gradient = \SpectraBlocks\Helpers\Core::get_advanced_gradient_value(
+					$block_attrs['enableAdvBgGradient'] ?? true,
+					$block_attrs['advBgGradient'] ?? '',
+					$block_attrs['backgroundGradient'] ?? '',
+					$block_attrs['enableAdvGradients'] ?? false
+				);
+				if ( ! empty( $base_gradient ) ) {
+					$overridden = self::build_gradient_with_overrides(
+						$base_gradient,
+						isset( $attrs['advBgGradientAngle'] ) ? intval( $attrs['advBgGradientAngle'] ) : null,
+						isset( $attrs['advBgGradientLocation1'] ) ? intval( $attrs['advBgGradientLocation1'] ) : null,
+						isset( $attrs['advBgGradientLocation2'] ) ? intval( $attrs['advBgGradientLocation2'] ) : null
+					);
+					if ( $overridden ) {
+						$css_rules[] = array(
+							'selector'   => '::before',
+							'style_attr' => 'background:' . $overridden . ' !important;',
+						);
+					}
+				}
+			}
+
+			// Handle responsive gradient angle/location overrides for hover gradient.
+			$has_hover_override = isset( $attrs['advBgGradientHoverAngle'] ) || isset( $attrs['advBgGradientHoverLocation1'] ) || isset( $attrs['advBgGradientHoverLocation2'] );
+			if ( $has_hover_override ) {
+				$base_hover_gradient = \SpectraBlocks\Helpers\Core::get_advanced_gradient_value(
+					$block_attrs['enableAdvBgGradientHover'] ?? true,
+					$block_attrs['advBgGradientHover'] ?? '',
+					$block_attrs['backgroundGradientHover'] ?? '',
+					$block_attrs['enableAdvGradients'] ?? false
+				);
+				if ( ! empty( $base_hover_gradient ) ) {
+					$overridden_hover = self::build_gradient_with_overrides(
+						$base_hover_gradient,
+						isset( $attrs['advBgGradientHoverAngle'] ) ? intval( $attrs['advBgGradientHoverAngle'] ) : null,
+						isset( $attrs['advBgGradientHoverLocation1'] ) ? intval( $attrs['advBgGradientHoverLocation1'] ) : null,
+						isset( $attrs['advBgGradientHoverLocation2'] ) ? intval( $attrs['advBgGradientHoverLocation2'] ) : null
+					);
+					if ( $overridden_hover ) {
+						$css_rules[] = array(
+							'selector'   => ':hover::before',
+							'style_attr' => 'background:' . $overridden_hover . ' !important;',
+						);
+					}
+				}
+			}
 		}
 
 		foreach ( $defs as $attr => $def ) {
 			// Get attribute value or use default if not set.
 			$value = isset( $attrs[ $attr ] ) ? $attrs[ $attr ] : ( $def['default'] ?? null );
+
+			// `reset_only` defaults exist for cross-breakpoint RESET
+			// semantics — they must not emit when the attribute is
+			// authored on NO breakpoint at all (an unauthored per-block
+			// `height: auto` at (0,4,0) overrides author/source CSS).
+			// Render-defaults (google-map 400px, button svg 16px) keep
+			// the original always-emit behaviour.
+			if (
+				null !== $value
+				&& ! isset( $attrs[ $attr ] )
+				&& ! empty( $def['reset_only'] )
+				&& ! self::attr_authored_on_any_device( $attr, $block_attrs )
+			) {
+				$value = null;
+			}
 
 			// Skip if value is null (no attribute and no default).
 			if ( null === $value && ! isset( $def['formatter'] ) ) {
@@ -652,10 +730,12 @@ class ResponsiveAttributeCSS {
 			}
 
 			// Add standard CSS rule.
+			// WP Style Engine requires string values — cast numeric values to string.
+			$string_value = is_string( $value ) ? $value : (string) $value;
 			if ( is_array( $def['property'] ) ) {
 				$declarations = array();
 				foreach ( $def['property'] as $property ) {
-					$declarations[ $property ] = $value;
+					$declarations[ $property ] = $string_value;
 				}
 				$css_rules[] = array(
 					'selector'     => self::build_full_selector( $selector, $def ),
@@ -666,7 +746,7 @@ class ResponsiveAttributeCSS {
 				$css_rules[] = array(
 					'selector'     => self::build_full_selector( $selector, $def ),
 					'declarations' => array(
-						$def['property'] => $value,
+						$def['property'] => $string_value,
 					),
 				);
 			}
@@ -676,6 +756,7 @@ class ResponsiveAttributeCSS {
 		$style_attr_css = '';
 		$regular_rules  = array();
 
+		/* @var array<int, array<string, mixed>> $css_rules */ // phpcs:ignore Squiz.Commenting.InlineComment.InvalidEndChar
 		foreach ( $css_rules as $rule ) {
 			if ( isset( $rule['style_attr'] ) ) {
 				// Handle rules with style_attr directly.
@@ -971,6 +1052,22 @@ class ResponsiveAttributeCSS {
 	}
 
 	/**
+	 * Whether the block configures a hover background — the one case where a
+	 * no-background container still needs its `::before` scaffold (the pseudo
+	 * is the hover paint surface).
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array $attrs Block attributes.
+	 * @return bool True when a hover background color/gradient is configured.
+	 */
+	private static function has_hover_background( $attrs ): bool {
+		return ! empty( $attrs['backgroundColorHover'] )
+			|| ! empty( $attrs['backgroundGradientHover'] )
+			|| ( ! empty( $attrs['enableAdvBgGradientHover'] ) && ! empty( $attrs['advBgGradientHover'] ) );
+	}
+
+	/**
 	 * Format background attribute for CSS.
 	 *
 	 * Generates actual background CSS properties for frontend, since style.scss no longer contains them.
@@ -1083,7 +1180,7 @@ class ResponsiveAttributeCSS {
 					// Apply the background color/gradient to the overlay.
 					$rules[] = array(
 						'selector'   => $background_selector . ' > .spectra-background-video__wrapper::after',
-						'style_attr' => 'content: ""; position: absolute; inset: 0; display: block; background: var(--spectra-background-gradient, var(--spectra-background-color)); z-index: 1;',
+						'style_attr' => 'content: ""; position: absolute; inset: 0; display: block; background: var(--spectra-background-gradient, var(--spectra-background-color)); opacity: var(--spectra-overlay-opacity, 1); z-index: 1;',
 					);
 
 					$rules[] = array(
@@ -1281,26 +1378,33 @@ class ResponsiveAttributeCSS {
 				$image_url = '';
 
 					// Try multiple ways to extract image URL.
+					// NOTE: esc_url_raw (not esc_url) — the URL goes into CSS
+					// `url(...)` inside a `<style>` element, where the HTML
+					// parser does NOT decode entities in RCDATA content. Using
+					// esc_url would emit `&#038;` literally, which the CSS
+					// parser leaves as-is, and the browser fetches a
+					// malformed URL (Unsplash / CDN 404, Chrome ORB blocks).
+					// esc_url_raw preserves `&` as-is for non-HTML contexts.
 				if ( isset( $val['media']['url'] ) ) {
 					// New structure with media.url.
-					$image_url = 'url(' . esc_url( $val['media']['url'] ) . ')';
+					$image_url = 'url(' . esc_url_raw( $val['media']['url'] ) . ')';
 				} elseif ( isset( $val['media'] ) && is_string( $val['media'] ) ) {
 					// Media as direct string URL.
-					$image_url = 'url(' . esc_url( $val['media'] ) . ')';
+					$image_url = 'url(' . esc_url_raw( $val['media'] ) . ')';
 				} elseif ( isset( $val['backgroundImage'] ) ) {
 					// Legacy structure support.
 					$bg_image = $val['backgroundImage'];
 
 					if ( is_array( $bg_image ) ) {
 						if ( isset( $bg_image['url'] ) ) {
-							$image_url = 'url(' . esc_url( $bg_image['url'] ) . ')';
+							$image_url = 'url(' . esc_url_raw( $bg_image['url'] ) . ')';
 						}
 					} elseif ( is_string( $bg_image ) ) {
-						$image_url = 'url(' . esc_url( $bg_image ) . ')';
+						$image_url = 'url(' . esc_url_raw( $bg_image ) . ')';
 					}
 				} elseif ( isset( $val['url'] ) ) {
 					// Direct URL property.
-					$image_url = 'url(' . esc_url( $val['url'] ) . ')';
+					$image_url = 'url(' . esc_url_raw( $val['url'] ) . ')';
 				}
 
 				if ( $image_url ) {
@@ -1369,25 +1473,57 @@ class ResponsiveAttributeCSS {
 		// This ensures proper visibility control across breakpoints.
 		if ( is_null( $val ) ) {
 			// For null backgrounds, explicitly hide the video wrapper with !important.
+			// Use direct-child selector (>) so this rule only hides the CURRENT block's
+			// own wrapper — not wrappers inside nested child blocks (e.g. slider-child
+			// inside spectra/slider).
 			$rules[] = array(
-				'selector'   => '.has-video-background  .spectra-background-video__wrapper',
+				'selector'   => ' > .spectra-background-video__wrapper',
 				'style_attr' => 'display: none !important;',
 			);
-			// For background type null and background set to some color. We need to add a opacity for it.
-			$rules[] = array(
-				'selector'   => '',
-				'style_attr' => 'position: relative;',
-			);
+			// NOTE: no bare `position: relative;` stamp here. A null background
+			// needs no stacking context of its own; the static container base
+			// rule (0,1,0) already defaults to relative, and stamping it at the
+			// per-block (0,4,0) selector silently overrides author/source CSS
+			// (e.g. Global-Styles classes setting `position: absolute` at
+			// (0,3,0)). Image/video branches emit their own guard when an
+			// overlay actually exists.
+			//
+			// The `::before` scaffold below follows the same rationale
+			// (2026-07-02): it is emitted ONLY when a hover background is
+			// configured — the pseudo is the hover paint surface, and
+			// pre-materializing it keeps hover transitions possible. For
+			// plain no-background containers it stamped a full-inset pseudo
+			// box at (0,4,0) on EVERY container instance and MERGED into
+			// source-authored `::before` content (measured live: authored
+			// `right: 0` corner triangle + scaffold `left: 0` → both set →
+			// LTR resolves left → the triangle flips sides; 198 scaffold
+			// rules for 31 of 33 containers on one imported page). The
+			// hover rule is self-sufficient (it carries the full prop set),
+			// so gating both merely drops dead rules when no hover exists.
+			// When the non-responsive backgroundColor/gradient is set, emit a
+			// self-contained ::before so the colour paints even when
+			// .has-video-background is on the element (added whenever ANY breakpoint
+			// uses video, which blocks the SCSS guard
+			// :not(.has-video-background)::before on ALL viewports).
+			// This is distinct from the hover-scaffold below — hover needs the paint
+			// surface to exist unconditionally; this branch needs the actual colour.
+			$has_non_responsive_color = ! empty( $attrs['backgroundColor'] ) || ! empty( $attrs['backgroundGradient'] );
+			if ( $has_non_responsive_color ) {
+				$rules[] = array(
+					'selector'   => '::before',
+					'style_attr' => 'content: ""; position: absolute; top: 0; right: 0; bottom: 0; left: 0; z-index: -1; pointer-events: none; display: block; background: var(--spectra-background-gradient, var(--spectra-background-color)); opacity: var(--spectra-overlay-opacity, 1);',
+				);
+			} elseif ( self::has_hover_background( $attrs ) ) {
+				$rules[] = array(
+					'selector'   => '::before',
+					'style_attr' => 'content: ""; position: absolute; top: 0; right: 0; bottom: 0; left: 0; pointer-events: none; display: block;',
+				);
 
-			$rules[] = array(
-				'selector'   => '::before',
-				'style_attr' => 'content: ""; position: absolute; top: 0; right: 0; bottom: 0; left: 0; pointer-events: none; display: block;',
-			);
-
-			$rules[] = array(
-				'selector'   => '.spectra-background-color-hover:hover::before',
-				'style_attr' => 'content: ""; position: absolute; top: 0; right: 0; bottom: 0; left: 0; z-index: -1; pointer-events: none; display: block;',
-			);
+				$rules[] = array(
+					'selector'   => '.spectra-background-color-hover:hover::before',
+					'style_attr' => 'content: ""; position: absolute; top: 0; right: 0; bottom: 0; left: 0; z-index: -1; pointer-events: none; display: block;',
+				);
+			}
 			return $rules;
 		}
 
@@ -1404,25 +1540,36 @@ class ResponsiveAttributeCSS {
 				$has_video = true;
 			} elseif ( 'none' === $val['type'] ) {
 				// For 'none' type, we still need to hide the video wrapper.
+				// Use direct-child selector (>) so this rule only hides the CURRENT block's
+				// own wrapper — not wrappers inside nested child blocks.
 				$rules[] = array(
-					'selector'   => '.has-video-background  .spectra-background-video__wrapper',
+					'selector'   => ' > .spectra-background-video__wrapper',
 					'style_attr' => 'display: none !important;',
 				);
-				// For background type none and background set to some color. We need to add a opacity for it.
-				$rules[] = array(
-					'selector'   => '',
-					'style_attr' => 'position: relative;',
-				);
-
-				$rules[] = array(
-					'selector'   => '::before',
-					'style_attr' => 'content: ""; position: absolute; top: 0; right: 0; bottom: 0; left: 0; z-index: -1; pointer-events: none; display: block;',
-				);
-
-				$rules[] = array(
-					'selector'   => '.spectra-background-color-hover:hover::before',
-					'style_attr' => 'content: ""; position: absolute; top: 0; right: 0; bottom: 0; left: 0; z-index: -1; pointer-events: none; display: block;',
-				);
+				// Self-contained ::before for type='none' — only when the block has its OWN
+				// overlay colour/gradient. Without this guard, CSS custom properties
+				// (--spectra-background-gradient, --spectra-background-color) inherited from a
+				// parent block leak into this ::before and paint the parent's gradient/colour
+				// over blocks that are intentionally set to no background.
+				$has_overlay = ! empty( $attrs['backgroundColor'] ) || ! empty( $attrs['backgroundGradient'] );
+				if ( $has_overlay ) {
+					$rules[] = array(
+						'selector'   => '::before',
+						'style_attr' => 'content: ""; position: absolute; top: 0; right: 0; bottom: 0; left: 0; z-index: -1; pointer-events: none; display: block; background: var(--spectra-background-gradient, var(--spectra-background-color)); opacity: var(--spectra-overlay-opacity, 1);',
+					);
+				} else {
+					// Reset inherited vars so parent gradient/color doesn't leak in.
+					$rules[] = array(
+						'selector'   => '',
+						'style_attr' => '--spectra-background-gradient: initial; --spectra-background-color: transparent;',
+					);
+				}
+				if ( self::has_hover_background( $attrs ) ) {
+					$rules[] = array(
+						'selector'   => '.spectra-background-color-hover:hover::before',
+						'style_attr' => 'content: ""; position: absolute; top: 0; right: 0; bottom: 0; left: 0; z-index: -1; pointer-events: none; display: block;',
+					);
+				}
 				return $rules;
 			}
 		}
@@ -1442,11 +1589,33 @@ class ResponsiveAttributeCSS {
 		// For responsive controls, we create the overlay dynamically per breakpoint.
 		if ( $has_image || $has_video ) {
 			if ( $has_video ) {
+				// Reset inherited background-color/gradient on this device's viewport so that
+				// a colour set on an outer/ancestor container does not leak through as an
+				// opaque overlay covering the video. The reset is intentionally in dynamic
+				// CSS (inside this device's media query) rather than in static SCSS so it
+				// does NOT apply on other breakpoints (e.g. mobile type='none') where the
+				// user's own colour must remain visible.
+				//
+				// Specificity of this rule (0,4,0) — the triple-class $selector — is
+				// intentionally lower than an inline style (1,0,0), so if the user
+				// explicitly set `backgroundGradient` on this video container (→ emitted
+				// as inline --spectra-background-gradient), that inline value wins and the
+				// overlay colour is preserved.
+				$rules[] = array(
+					'selector'   => '',
+					// Reset background-color to transparent so inherited colors (e.g. from an outer
+					// container) don't leak into the video overlay. The gradient is reset to `initial`
+					// (the guaranteed-invalid value) so that var(--spectra-background-gradient, fallback)
+					// always falls through to --spectra-background-color. Using `transparent` for the
+					// gradient would make it an explicit value and prevent the fallback from firing.
+					'style_attr' => '--spectra-background-color: transparent; --spectra-background-gradient: initial;',
+				);
+
 				// For video backgrounds, create overlay directly on wrapper::after when needed.
 				// Apply the background color/gradient to the overlay.
 				$rules[] = array(
 					'selector'   => ' > .spectra-background-video__wrapper::after',
-					'style_attr' => 'content: ""; position: absolute; inset: 0; display: block; background: var(--spectra-background-gradient, var(--spectra-background-color)); z-index: 1;',
+					'style_attr' => 'content: ""; position: absolute; inset: 0; display: block; background: var(--spectra-background-gradient, var(--spectra-background-color)); opacity: var(--spectra-overlay-opacity, 1); z-index: 1;',
 				);
 
 				$rules[] = array(
@@ -1480,10 +1649,29 @@ class ResponsiveAttributeCSS {
 					'style_attr' => 'position: relative;',
 				);
 
+				// Always reset inherited CSS vars so a parent's gradient/color cannot
+				// leak into this block's overlay via CSS custom-property inheritance.
+				// When this block has its own overlay, its inline style="--spectra-background-gradient:..."
+				// has specificity (1,0,0,0) and overrides this reset, so the correct
+				// overlay still paints.
 				$rules[] = array(
-					'selector'   => '::before',
-					'style_attr' => 'content: ""; position: absolute; top: 0; right: 0; bottom: 0; left: 0; pointer-events: none; display: block;',
+					'selector'   => '',
+					'style_attr' => '--spectra-background-gradient: initial; --spectra-background-color: transparent;',
 				);
+
+				$has_overlay = ! empty( $attrs['backgroundColor'] ) || ! empty( $attrs['backgroundGradient'] );
+				if ( $has_overlay ) {
+					$rules[] = array(
+						'selector'   => '::before',
+						'style_attr' => 'content: ""; position: absolute; top: 0; right: 0; bottom: 0; left: 0; pointer-events: none; display: block; background: var(--spectra-background-gradient, var(--spectra-background-color)); opacity: var(--spectra-overlay-opacity, 1);',
+					);
+				} else {
+					// Emit plain scaffold so hover overlay still has a paint surface.
+					$rules[] = array(
+						'selector'   => '::before',
+						'style_attr' => 'content: ""; position: absolute; top: 0; right: 0; bottom: 0; left: 0; pointer-events: none; display: block;',
+					);
+				}
 
 				// Add hover rules for overlay scenarios - override overlay background on hover.
 				// Use :where() for low specificity to allow Global Styles override.
@@ -1602,9 +1790,11 @@ class ResponsiveAttributeCSS {
 
 		} else {
 			// Hide video wrapper for non-video breakpoints.
-			// This is crucial - we MUST generate this CSS even if there's an image/color/gradient.
+			// Use direct-child selector (>) so this rule only hides the CURRENT block's
+			// own wrapper — not wrappers inside nested child blocks (e.g. slider-child
+			// inside spectra/slider when the slider shows an image at this breakpoint).
 			$rules[] = array(
-				'selector'   => '.has-video-background .spectra-background-video__wrapper',
+				'selector'   => ' > .spectra-background-video__wrapper',
 				'style_attr' => 'display: none !important;',
 			);
 		}
@@ -1691,26 +1881,29 @@ class ResponsiveAttributeCSS {
 			$image_url = '';
 
 				// Try multiple ways to extract image URL.
+				// esc_url_raw (not esc_url) — URL goes into CSS `url(...)`
+				// where `&#038;` is not HTML-decoded; see the sibling block
+				// above for the full rationale.
 			if ( isset( $val['media']['url'] ) ) {
 				// New structure with media.url.
-				$image_url = 'url(' . esc_url( $val['media']['url'] ) . ')';
+				$image_url = 'url(' . esc_url_raw( $val['media']['url'] ) . ')';
 			} elseif ( isset( $val['media'] ) && is_string( $val['media'] ) ) {
 				// Media as direct string URL.
-				$image_url = 'url(' . esc_url( $val['media'] ) . ')';
+				$image_url = 'url(' . esc_url_raw( $val['media'] ) . ')';
 			} elseif ( isset( $val['backgroundImage'] ) ) {
 				// Legacy structure support.
 				$bg_image = $val['backgroundImage'];
 
 				if ( is_array( $bg_image ) ) {
 					if ( isset( $bg_image['url'] ) ) {
-						$image_url = 'url(' . esc_url( $bg_image['url'] ) . ')';
+						$image_url = 'url(' . esc_url_raw( $bg_image['url'] ) . ')';
 					}
 				} elseif ( is_string( $bg_image ) ) {
-					$image_url = 'url(' . esc_url( $bg_image ) . ')';
+					$image_url = 'url(' . esc_url_raw( $bg_image ) . ')';
 				}
 			} elseif ( isset( $val['url'] ) ) {
 				// Direct URL property.
-				$image_url = 'url(' . esc_url( $val['url'] ) . ')';
+				$image_url = 'url(' . esc_url_raw( $val['url'] ) . ')';
 			}
 
 			if ( $image_url ) {
@@ -2089,7 +2282,7 @@ class ResponsiveAttributeCSS {
 		return array(
 			array(
 				'selector'   => '',
-				'style_attr' => '--spectra-overlay-image: url("' . esc_url( $image_url ) . '");',
+				'style_attr' => '--spectra-overlay-image: url("' . esc_url_raw( $image_url ) . '");',
 			),
 		);
 	}
@@ -2113,16 +2306,23 @@ class ResponsiveAttributeCSS {
 	/**
 	 * Format image scale value for CSS object-fit property.
 	 *
-	 * Converts WordPress image scale values to CSS object-fit values.
+	 * Converts WordPress image scale values to CSS object-fit values. Returns
+	 * null when no explicit value is set so the calling pipeline skips emitting
+	 * a per-block `object-fit` rule — the previous `'fill'` fallback wrote a
+	 * `object-fit: fill` rule on every core/image without an explicit `scale`,
+	 * overriding any className-driven utility (e.g. Tailwind `object-cover`)
+	 * authored on the `<figure>` and silently distorting aspect-mismatched
+	 * images. UI users who pick a value via the block panel still emit as
+	 * before.
 	 *
 	 * @since 3.0.0
 	 *
 	 * @param mixed $val The scale value.
-	 * @return string CSS object-fit value.
+	 * @return string|null CSS object-fit value, or null to skip emission.
 	 */
-	private static function format_image_scale( $val ): string {
+	private static function format_image_scale( $val ): ?string { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter
 		if ( is_null( $val ) ) {
-			return 'fill';
+			return null;
 		}
 
 		// Map WordPress scale values to CSS object-fit values.
@@ -2135,6 +2335,133 @@ class ResponsiveAttributeCSS {
 			'scale-down' => 'scale-down',
 		);
 
-		return isset( $scale_map[ $val ] ) ? $scale_map[ $val ] : 'fill';
+		return isset( $scale_map[ $val ] ) ? $scale_map[ $val ] : null;
+	}
+
+	/**
+	 * Whether an attribute is authored on the block at all — base attrs or
+	 * ANY responsiveControls device slice. Gate for `reset_only` defaults:
+	 * a cross-breakpoint reset is meaningful only when some breakpoint
+	 * authored the attribute.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $attr        Attribute key.
+	 * @param array  $block_attrs Full block attributes.
+	 * @return bool
+	 */
+	private static function attr_authored_on_any_device( string $attr, array $block_attrs ): bool {
+		if ( isset( $block_attrs[ $attr ] ) ) {
+			return true;
+		}
+		$rc = $block_attrs['responsiveControls'] ?? array();
+		if ( is_array( $rc ) ) {
+			foreach ( $rc as $device_attrs ) {
+				if ( is_array( $device_attrs ) && isset( $device_attrs[ $attr ] ) ) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Build a gradient string with per-device angle and stop-position overrides.
+	 *
+	 * Parses a CSS gradient string and replaces the angle (linear) or stop positions
+	 * (both linear and radial) with the supplied override values.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string   $base_gradient The base CSS gradient string.
+	 * @param int|null $angle         Override angle (degrees). Null = keep original.
+	 * @param int|null $location1     Override first stop position (%). Null = keep original.
+	 * @param int|null $location2     Override second stop position (%). Null = keep original.
+	 * @return string The modified gradient string, or the original if it cannot be parsed.
+	 */
+	public static function build_gradient_with_overrides( string $base_gradient, $angle = null, $location1 = null, $location2 = null ): string {
+		if ( empty( $base_gradient ) ) {
+			return $base_gradient;
+		}
+
+		if ( null === $angle && null === $location1 && null === $location2 ) {
+			return $base_gradient;
+		}
+
+		$is_linear = ( 0 === strpos( $base_gradient, 'linear-gradient' ) );
+		$is_radial = ( 0 === strpos( $base_gradient, 'radial-gradient' ) );
+
+		if ( ! $is_linear && ! $is_radial ) {
+			return $base_gradient;
+		}
+
+		// Extract inner content between the outermost parentheses.
+		$start = strpos( $base_gradient, '(' );
+		$end   = strrpos( $base_gradient, ')' );
+
+		if ( false === $start || false === $end ) {
+			return $base_gradient;
+		}
+
+		$inner = substr( $base_gradient, $start + 1, $end - $start - 1 );
+
+		// Split on top-level commas (ignore commas inside parentheses, e.g. rgba()).
+		$parts     = array();
+		$depth     = 0;
+		$buffer    = '';
+		$inner_len = strlen( $inner );
+		for ( $i = 0; $i < $inner_len; $i++ ) {
+			$ch = $inner[ $i ];
+			if ( '(' === $ch ) {
+				++$depth;
+			} elseif ( ')' === $ch ) {
+				--$depth;
+			}
+			if ( ',' === $ch && 0 === $depth ) {
+				$parts[] = trim( $buffer );
+				$buffer  = '';
+			} else {
+				$buffer .= $ch;
+			}
+		}
+		if ( '' !== trim( $buffer ) ) {
+			$parts[] = trim( $buffer );
+		}
+
+		if ( count( $parts ) < 2 ) {
+			return $base_gradient;
+		}
+
+		$first_idx = 0; // Index of the first color stop.
+
+		// For linear-gradient, first part may be the angle; replace it if override provided.
+		if ( $is_linear ) {
+			if ( preg_match( '/^-?\d+(\.\d+)?deg$/i', $parts[0] ) || preg_match( '/^to\s+/i', $parts[0] ) ) {
+				if ( null !== $angle ) {
+					$parts[0] = (int) $angle . 'deg';
+				}
+				$first_idx = 1;
+			} elseif ( null !== $angle ) {
+				// No angle part; insert one if override is provided.
+				array_unshift( $parts, (int) $angle . 'deg' );
+				$first_idx = 1;
+			}
+		}
+
+		// Apply location1 override to the first color stop.
+		if ( null !== $location1 && isset( $parts[ $first_idx ] ) ) {
+			// Replace trailing position value (e.g. "red 0%" → "red 10%").
+			$parts[ $first_idx ] = preg_replace( '/-?\d+(\.\d+)?%\s*$/', (int) $location1 . '%', (string) $parts[ $first_idx ] ) ?? $parts[ $first_idx ];
+		}
+
+		// Apply location2 override to the last color stop.
+		$last_idx = count( $parts ) - 1;
+		if ( null !== $location2 && $last_idx > $first_idx ) {
+			$parts[ $last_idx ] = preg_replace( '/-?\d+(\.\d+)?%\s*$/', (int) $location2 . '%', (string) $parts[ $last_idx ] ) ?? $parts[ $last_idx ];
+		}
+
+		$type = $is_linear ? 'linear-gradient' : 'radial-gradient';
+		return $type . '(' . implode( ', ', $parts ) . ')';
 	}
 }

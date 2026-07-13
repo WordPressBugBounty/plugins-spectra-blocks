@@ -74,9 +74,6 @@ class Admin_Menu {
 		add_action( 'admin_menu', array( $this, 'setup_menu' ) );
 		add_action( 'admin_menu', array( $this, 'rename_classic_spectra_menu' ), 99 );
 		add_action( 'admin_init', array( $this, 'settings_admin_scripts' ) );
-		add_action( 'admin_init', array( $this, 'handle_zip_ai_auth_callback' ) );
-		add_action( 'admin_init', array( $this, 'handle_zip_ai_revoke' ) );
-		add_action( 'admin_init', array( $this, 'sync_zip_ai_token' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_submenu_styles' ) );
 		add_filter(
 			'admin_footer_text',
@@ -343,8 +340,8 @@ class Admin_Menu {
 
 		// Add the Spectra Menu.
 		add_menu_page(
-			__( 'Spectra', 'spectra-blocks' ),
-			__( 'Spectra', 'spectra-blocks' ),
+			__( 'Spectra Blocks', 'spectra-blocks' ),
+			__( 'Spectra Blocks', 'spectra-blocks' ),
 			$capability,
 			$menu_slug,
 			array( $this, 'render' ),
@@ -555,18 +552,8 @@ class Admin_Menu {
 			$localize['activate_zip_ai_nonce']            = wp_create_nonce( 'spectra_blocks_activate_zip_ai' );
 			$localize['zip_ai_verify_authenticity_nonce'] = wp_create_nonce( 'spectra_blocks_zip_ai_verify_authenticity' );
 			$localize['zip_ai_module_status_nonce']       = wp_create_nonce( 'spectra_blocks_zip_ai_module_status' );
-			$localize['get_fresh_credits_nonce']          = wp_create_nonce( 'spectra_blocks_get_fresh_credits' );
 			$localize['zip_ai_is_authorized']             = self::is_zip_ai_authorized();
-			$localize['zip_ai_status']                    = self::is_zip_ai_authorized() ? 'connected' : 'inactive';
-			$localize['zip_ai_auth_middleware']           = self::get_zip_ai_auth_url();
-			$localize['zip_ai_auth_revoke_url']           = add_query_arg(
-				array(
-					'spectra_blocks_revoke_zip_ai' => '1',
-					'nonce'                        => wp_create_nonce( 'spectra_blocks_revoke_zip_ai' ),
-				),
-				admin_url( 'admin.php?page=spectra-blocks&path=ai-features' )
-			);
-			$localize['zip_ai_credit_details']            = self::get_zip_ai_credit_details();
+			$localize['zip_ai_open_url']                  = admin_url( 'index.php?zipwp_open_assistant=1' );
 		}
 
 		// First register any pre-required scripts.
@@ -753,300 +740,16 @@ class Admin_Menu {
 	 * @return void
 	 */
 	/**
-	 * Check whether ZipWP AI is authorized. ERA plugin takes priority; falls back to own token storage.
-	 * Requires the plugin to be active — token alone is not enough.
+	 * Check whether ZipWP AI is authorized via the ZIP-AI plugin.
 	 *
 	 * @since 0.0.9
 	 * @return bool
 	 */
 	public static function is_zip_ai_authorized() {
-		// Own token (standalone flow) takes priority — stored by our own callback.
-		$settings = get_option( 'spectra_blocks_zip_ai_settings', array() );
-		if ( ! empty( $settings['auth_token'] ) ) {
-			return true;
-		}
-		// Fallback: ERA plugin token.
-		if ( class_exists( '\ZipAI\MCP\Classes\Core\Helper' ) && method_exists( '\ZipAI\MCP\Classes\Core\Helper', 'is_authorized' ) ) {
+		if ( class_exists( '\\ZipAI\\MCP\\Classes\\Core\\Helper' ) && method_exists( '\\ZipAI\\MCP\\Classes\\Core\\Helper', 'is_authorized' ) ) {
 			return \ZipAI\MCP\Classes\Core\Helper::is_authorized();
 		}
 		return false;
-	}
-
-	/**
-	 * Build the ZipWP auth URL. ERA plugin's URL takes priority; falls back to standalone.
-	 *
-	 * @since 0.0.9
-	 * @return string
-	 */
-	public static function get_zip_ai_auth_url() {
-		// Always use standalone callback — avoids ERA token-exchange dependency.
-		// ZipWP returns credit_token directly which we store and use for credit-server calls.
-		$nonce        = wp_create_nonce( 'spectra_blocks_zip_ai_auth_nonce' );
-		$redirect_url = add_query_arg(
-			array(
-				'nonce'                  => $nonce,
-				'spectra-blocks-ai-auth' => '1',
-			),
-			admin_url( 'admin.php?page=spectra-blocks&path=ai-features' )
-		);
-		$middleware   = defined( 'ZIPAI_MCP_MIDDLEWARE' ) ? ZIPAI_MCP_MIDDLEWARE : SPECTRA_BLOCKS_ZIPWP_MIDDLEWARE;
-		return add_query_arg(
-			array(
-				'type'         => 'token',
-				'redirect_url' => rawurlencode( $redirect_url ),
-				'plugin'       => 'spectra',
-				'source'       => 'spectra',
-			),
-			$middleware
-		);
-	}
-
-	/**
-	 * Fetch credit details. ERA plugin takes priority; falls back to direct credit-server call.
-	 *
-	 * @since 0.0.9
-	 * @param bool $fresh Force-bypass transient cache.
-	 * @return array{used: int, total: int}
-	 */
-	public static function get_zip_ai_credit_details( $fresh = false ) {
-		$cache_key = 'spectra_blocks_zip_ai_credits_' . get_current_user_id();
-		if ( ! $fresh ) {
-			$cached = get_transient( $cache_key );
-			if ( false !== $cached ) {
-				return $cached;
-			}
-		}
-
-		$result = array(
-			'used'  => 0,
-			'total' => 0,
-		);
-
-		// Always use the production credit server and our own token — the ERA
-		// local dev override (ZIPAI_MCP_CREDIT_SERVER_API → localhost) would
-		// return 0 credits for production ZipWP accounts.
-		$settings = get_option( 'spectra_blocks_zip_ai_settings', array() );
-		$token    = ! empty( $settings['auth_token'] ) ? $settings['auth_token'] : '';
-
-		if ( empty( $token ) ) {
-			return $result;
-		}
-
-		$api_base = SPECTRA_BLOCKS_ZIPWP_CREDIT_SERVER;
-		$response = wp_remote_post(
-			$api_base . 'usage',
-			array(
-				'headers' => array(
-					'Content-Type'  => 'application/json',
-					'Accept'        => 'application/json',
-					'Authorization' => 'Bearer ' . $token,
-				),
-				'body'    => wp_json_encode( array() ),
-				'timeout' => 10,
-			)
-		);
-
-		if ( ! is_wp_error( $response ) ) {
-			$data   = json_decode( wp_remote_retrieve_body( $response ), true );
-			$used   = isset( $data['total_used_credits'] ) ? (int) $data['total_used_credits'] : 0;
-			$total  = isset( $data['total_credits'] ) ? (int) $data['total_credits'] : 0;
-			$result = array(
-				'used'  => $used,
-				'total' => $total,
-			);
-			set_transient( $cache_key, $result, 5 * MINUTE_IN_SECONDS );
-		}
-
-		return $result;
-	}
-
-	/**
-	 * Sync a plain-text token (and user metadata) to zip_ai_settings (wp.org zip-ai plugin).
-	 *
-	 * Mirrors the fields zip-ai's own AJAX connect handler sets so the chat stream
-	 * endpoint receives a fully-populated session context.
-	 *
-	 * @since 0.0.9
-	 * @param string $token    Plain-text auth token.
-	 * @param array  $metadata Optional user metadata: email, name, user_id, site_id.
-	 * @return void
-	 */
-	private static function sync_token_to_zip_ai_settings( $token, $metadata = array() ) {
-		if ( ! class_exists( '\\ZipAI\\Classes\\Core\\Utils' ) ) {
-			return;
-		}
-
-		$settings                      = get_option( 'zip_ai_settings', array() );
-		$settings['auth_token']        = \ZipAI\Classes\Core\Utils::encrypt( $token );
-		$settings['auth_token_server'] = untrailingslashit( SPECTRA_BLOCKS_ZIPWP_CREDIT_SERVER );
-		$settings['enabled']           = true;
-		$settings['domain']            = wp_parse_url( home_url(), PHP_URL_HOST );
-		$settings['auth_wp_user_id']   = get_current_user_id();
-		$settings['authenticated_at']  = current_time( 'mysql' );
-
-		if ( ! empty( $metadata['email'] ) ) {
-			$settings['user_email'] = sanitize_email( $metadata['email'] );
-		}
-		if ( ! empty( $metadata['name'] ) ) {
-			$settings['user_name'] = sanitize_text_field( $metadata['name'] );
-		}
-		if ( ! empty( $metadata['user_id'] ) ) {
-			$settings['user_id'] = sanitize_text_field( $metadata['user_id'] );
-		}
-		if ( ! empty( $metadata['site_id'] ) ) {
-			$settings['site_id'] = sanitize_text_field( $metadata['site_id'] );
-		}
-
-		update_option( 'zip_ai_settings', $settings );
-
-		// Register HMAC shared secret the first time (required for credit-server requests).
-		if ( class_exists( '\\ZipAI\\Classes\\Core\\Helper' )
-			&& method_exists( '\\ZipAI\\Classes\\Core\\Helper', 'is_hmac_registered' )
-			&& ! \ZipAI\Classes\Core\Helper::is_hmac_registered()
-		) {
-			\ZipAI\Classes\Core\Helper::register_shared_secret_with_laravel();
-		}
-	}
-
-	/**
-	 * Sync a plain-text token to zip_mcp_settings (ERA standalone plugin, ZipAI\MCP\Classes\Core namespace).
-	 *
-	 * @since 0.0.9
-	 * @param string $token Plain-text auth token.
-	 * @return void
-	 */
-	private static function sync_token_to_zip_mcp_settings( $token ) {
-		if ( ! class_exists( '\\ZipAI\\MCP\\Classes\\Core\\Utils' ) ) {
-			return;
-		}
-
-		// Use ERA's own credit-server base so get_decrypted_auth_token() matches
-		// the stored server against its own ZIPAI_MCP_CREDIT_SERVER_API value.
-		$era_api = defined( 'ZIPAI_MCP_CREDIT_SERVER_API' )
-			? untrailingslashit( ZIPAI_MCP_CREDIT_SERVER_API )
-			: untrailingslashit( SPECTRA_BLOCKS_ZIPWP_CREDIT_SERVER );
-
-		$zip_mcp_settings                      = get_option( 'zip_mcp_settings', array() );
-		$zip_mcp_settings['auth_token']        = \ZipAI\MCP\Classes\Core\Utils::encrypt( $token );
-		$zip_mcp_settings['auth_token_server'] = $era_api;
-		update_option( 'zip_mcp_settings', $zip_mcp_settings );
-	}
-
-	/**
-	 * Sync the Spectra Blocks auth token to the zip-ai plugin on every admin load.
-	 *
-	 * Handles both the wp.org zip-ai (ZipAI\Classes\Core / zip_ai_settings) and the
-	 * ERA standalone plugin (ZipAI\MCP\Classes\Core / zip_mcp_settings).
-	 *
-	 * @since 0.0.9
-	 * @return void
-	 */
-	public function sync_zip_ai_token() {
-		$our_settings = get_option( 'spectra_blocks_zip_ai_settings', array() );
-		$our_token    = ! empty( $our_settings['auth_token'] ) ? $our_settings['auth_token'] : '';
-
-		if ( empty( $our_token ) ) {
-			return;
-		}
-
-		$metadata = array(
-			'email'   => ! empty( $our_settings['user_email'] ) ? $our_settings['user_email'] : '',
-			'name'    => ! empty( $our_settings['user_name'] ) ? $our_settings['user_name'] : '',
-			'user_id' => ! empty( $our_settings['user_id'] ) ? $our_settings['user_id'] : '',
-			'site_id' => ! empty( $our_settings['site_id'] ) ? $our_settings['site_id'] : '',
-		);
-
-		self::sync_token_to_zip_ai_settings( $our_token, $metadata );
-		self::sync_token_to_zip_mcp_settings( $our_token );
-	}
-
-	/**
-	 * Handle the ZipWP auth callback (standalone flow): store token, redirect back.
-	 *
-	 * @since 0.0.9
-	 * @return void
-	 */
-	public function handle_zip_ai_auth_callback() {
-		if ( ! isset( $_GET['spectra-blocks-ai-auth'] ) || '1' !== sanitize_text_field( wp_unslash( $_GET['spectra-blocks-ai-auth'] ) ) ) {
-			return;
-		}
-
-		$nonce = isset( $_GET['nonce'] ) ? sanitize_text_field( wp_unslash( $_GET['nonce'] ) ) : '';
-		if ( ! wp_verify_nonce( $nonce, 'spectra_blocks_zip_ai_auth_nonce' ) ) {
-			wp_safe_redirect( admin_url( 'admin.php?page=spectra-blocks&path=ai-features' ) );
-			exit;
-		}
-
-		// Accept credit_token first (direct credit-server token); fall back to token.
-		$token = isset( $_GET['credit_token'] ) ? sanitize_text_field( wp_unslash( $_GET['credit_token'] ) ) : '';
-		if ( empty( $token ) ) {
-			$token = isset( $_GET['token'] ) ? sanitize_text_field( wp_unslash( $_GET['token'] ) ) : '';
-		}
-		if ( ! empty( $token ) ) {
-			$metadata = array(
-				'email'   => isset( $_GET['email'] ) ? sanitize_email( wp_unslash( $_GET['email'] ) ) : '',
-				'name'    => isset( $_GET['name'] ) ? sanitize_text_field( wp_unslash( $_GET['name'] ) ) : '',
-				'user_id' => isset( $_GET['user_id'] ) ? sanitize_text_field( wp_unslash( $_GET['user_id'] ) ) : '',
-				'site_id' => isset( $_GET['site_id'] ) ? sanitize_text_field( wp_unslash( $_GET['site_id'] ) ) : '',
-			);
-
-			$settings               = get_option( 'spectra_blocks_zip_ai_settings', array() );
-			$settings['auth_token'] = $token;
-			$settings['user_email'] = $metadata['email'];
-			$settings['user_name']  = $metadata['name'];
-			$settings['user_id']    = $metadata['user_id'];
-			$settings['site_id']    = $metadata['site_id'];
-			update_option( 'spectra_blocks_zip_ai_settings', $settings );
-
-			self::sync_token_to_zip_ai_settings( $token, $metadata );
-			self::sync_token_to_zip_mcp_settings( $token );
-		}
-
-		wp_safe_redirect( admin_url( 'admin.php?page=spectra-blocks&path=ai-features' ) );
-		exit;
-	}
-
-	/**
-	 * Handle the ZipWP auth revoke: clear token, redirect.
-	 *
-	 * @since 0.0.9
-	 * @return void
-	 */
-	public function handle_zip_ai_revoke() {
-		if ( ! isset( $_GET['spectra_blocks_revoke_zip_ai'] ) || '1' !== sanitize_text_field( wp_unslash( $_GET['spectra_blocks_revoke_zip_ai'] ) ) ) {
-			return;
-		}
-
-		$nonce = isset( $_GET['nonce'] ) ? sanitize_text_field( wp_unslash( $_GET['nonce'] ) ) : '';
-		if ( ! wp_verify_nonce( $nonce, 'spectra_blocks_revoke_zip_ai' ) || ! current_user_can( 'manage_options' ) ) {
-			wp_safe_redirect( admin_url( 'admin.php?page=spectra-blocks&path=ai-features' ) );
-			exit;
-		}
-
-		delete_option( 'spectra_blocks_zip_ai_settings' );
-
-		// Clear synced tokens and metadata from both zip-ai plugin variants.
-		$zip_ai_settings = get_option( 'zip_ai_settings', array() );
-		unset(
-			$zip_ai_settings['auth_token'],
-			$zip_ai_settings['auth_token_server'],
-			$zip_ai_settings['user_email'],
-			$zip_ai_settings['user_name'],
-			$zip_ai_settings['user_id'],
-			$zip_ai_settings['site_id'],
-			$zip_ai_settings['domain'],
-			$zip_ai_settings['enabled'],
-			$zip_ai_settings['authenticated_at'],
-			$zip_ai_settings['auth_wp_user_id']
-		);
-		update_option( 'zip_ai_settings', $zip_ai_settings );
-
-		$zip_mcp_settings = get_option( 'zip_mcp_settings', array() );
-		unset( $zip_mcp_settings['auth_token'], $zip_mcp_settings['auth_token_server'] );
-		update_option( 'zip_mcp_settings', $zip_mcp_settings );
-
-		wp_safe_redirect( admin_url( 'admin.php?page=spectra-blocks&path=ai-features' ) );
-		exit;
 	}
 
 	/**

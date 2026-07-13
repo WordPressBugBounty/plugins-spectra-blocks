@@ -59,13 +59,15 @@ use SpectraBlocks\Abilities\UpdatePopup;
 use SpectraBlocks\Abilities\CreatePost;
 use SpectraBlocks\Abilities\ApplyDisplayConditions;
 use SpectraBlocks\Abilities\RemoveDisplayConditions;
+use SpectraBlocks\Abilities\GetGlobalStylesConfig;
+use SpectraBlocks\Abilities\UpdateGlobalStyles;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
  * Abilities Manager class.
  *
- * @since 0.0.9
+ * @since 1.0.0
  */
 class AbilitiesManager {
 
@@ -74,12 +76,16 @@ class AbilitiesManager {
 	/**
 	 * Initialize the abilities manager.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
 	public function init(): void {
 		if ( ! function_exists( 'wp_register_ability' ) ) {
+			return;
+		}
+
+		if ( 'enabled' !== \Spectra_Blocks_Admin_Helper::get_admin_settings_option( 'spectra_blocks_enable_abilities', 'disabled' ) ) {
 			return;
 		}
 
@@ -90,7 +96,7 @@ class AbilitiesManager {
 	/**
 	 * Register ability categories.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
@@ -130,7 +136,7 @@ class AbilitiesManager {
 	/**
 	 * Register all concrete abilities.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
@@ -178,6 +184,8 @@ class AbilitiesManager {
 			ListAvailableGoogleFonts::class,
 			AddGoogleFont::class,
 			RemoveGoogleFont::class,
+			GetGlobalStylesConfig::class,
+			UpdateGlobalStyles::class,
 
 			// Popup Management.
 			CreatePopup::class,

@@ -2,7 +2,7 @@
 /**
  * View for rendering the Post Template block.
  *
- * @since 0.0.9
+ * @since 1.0.0
  * @package Spectra\Blocks\PostTemplate
  */
 

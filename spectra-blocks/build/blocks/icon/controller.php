@@ -20,7 +20,6 @@ $icon   = $attributes['icon'] ?? 'star';
 $icon_props = array(
 	'focusable' => 'false',
 	'style'     => array(
-		'fill'      => 'currentColor',
 		'transform' => ! empty( $attributes['rotation'] ) ? 'rotate(' . $attributes['rotation'] . 'deg)' : '',
 	),
 );

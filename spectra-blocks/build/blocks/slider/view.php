@@ -18,7 +18,9 @@ $icon_props = array(
 <div <?php echo wp_kses_data( $wrapper_attributes ); ?>>
 <?php
 	// Render the background video element if needed.
-	Renderer::background_video( $background );
+	// When any responsive breakpoint uses video, render from that breakpoint's data
+	// so the element exists in the DOM for CSS to show/hide per viewport.
+	Renderer::background_video( ( $has_video_background && null !== $video_background ) ? $video_background : $background );
 ?>
 
 	<div class="spectra-slider-container">
@@ -68,7 +70,7 @@ $icon_props = array(
 		<?php if ( $pagination ) : ?>
 			<div 
 				class="swiper-pagination" 
-				role="tablist" 
+				role="group" 
 				aria-label="<?php esc_attr_e( 'Slider pagination', 'spectra-blocks' ); ?>"
 				data-role="none"
 			></div>

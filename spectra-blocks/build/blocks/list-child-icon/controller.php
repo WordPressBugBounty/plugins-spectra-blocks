@@ -142,7 +142,6 @@ $icon = 'ordered' === $list_type ? null : $icon_name;
 $icon_props = array(
 	'focusable' => 'false',
 	'style'     => array(
-		'fill'      => 'currentColor',
 		'transform' => ! empty( $rotation ) ? 'rotate(' . $rotation . 'deg)' : '',
 	),
 );

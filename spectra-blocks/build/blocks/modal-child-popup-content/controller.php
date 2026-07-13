@@ -130,7 +130,7 @@ $custom_classes = array(
 	// Video background class is required for proper positioning.
 	( 'video' === $background_type || $has_video_background ) ? 'spectra-background-video' : '',
 	// These classes are used for overflow handling with border-radius.
-	$has_video_background ? 'has-video-background' : '',
+	( $has_video_background || 'video' === $background_type ) ? 'has-video-background' : '',
 	( 'image' === $background_type || $has_responsive_image ) ? 'has-image-background' : '',
 	// Add overlay class when background has overlay enabled.
 	( $has_responsive_overlay ? 'spectra-background-overlay' : '' ),

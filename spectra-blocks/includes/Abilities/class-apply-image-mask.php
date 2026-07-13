@@ -16,14 +16,14 @@ defined( 'ABSPATH' ) || exit;
 /**
  * ApplyImageMask ability class.
  *
- * @since 0.0.9
+ * @since 1.0.0
  */
 class ApplyImageMask extends AbstractAbility {
 
 	/**
 	 * Valid predefined mask shapes.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @var string[]
 	 */
@@ -43,7 +43,7 @@ class ApplyImageMask extends AbstractAbility {
 	/**
 	 * Get the ability name.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @return string
 	 */
@@ -54,7 +54,7 @@ class ApplyImageMask extends AbstractAbility {
 	/**
 	 * Get the ability label.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @return string
 	 */
@@ -65,7 +65,7 @@ class ApplyImageMask extends AbstractAbility {
 	/**
 	 * Get the ability description.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @return string
 	 */
@@ -76,7 +76,7 @@ class ApplyImageMask extends AbstractAbility {
 	/**
 	 * Get the ability category.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @return string
 	 */
@@ -87,7 +87,7 @@ class ApplyImageMask extends AbstractAbility {
 	/**
 	 * Get ability annotations for REST discovery.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @return array
 	 */
@@ -102,7 +102,7 @@ class ApplyImageMask extends AbstractAbility {
 	/**
 	 * Get the input schema.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @return array
 	 */
@@ -155,7 +155,7 @@ class ApplyImageMask extends AbstractAbility {
 	/**
 	 * Get the output schema.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @return array
 	 */
@@ -173,7 +173,7 @@ class ApplyImageMask extends AbstractAbility {
 	/**
 	 * Execute the ability.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @param array $params Input parameters.
 	 * @return array|WP_Error Result or error.

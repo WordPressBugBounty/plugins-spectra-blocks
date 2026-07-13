@@ -4,7 +4,7 @@ Tags: ai website builder, gutenberg blocks, page builder, block editor, website 
 Requires at least: 6.6
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.0.9
+Stable tag: 1.0.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -20,20 +20,13 @@ That's the whole idea: get the speed of an AI builder without giving up the edit
 
 If you're already using the original Spectra plugin, it hasn't gone anywhere - it's now called **Spectra Legacy**, and it keeps working and keeps getting maintenance updates. Spectra Blocks is a separate, new plugin. You move to it whenever it makes sense, not because you have to.
 
-=== Why not just use a page builder? ===
-
-Page builders like Elementor, Divi, and Beaver Builder wrap the WordPress editor in their own framework. That means their own shortcodes, their own rendering engine, and often their own way of doing things that doesn't go away even if you switch themes or plugins.
-
-Spectra Blocks doesn't do that. It extends Gutenberg - it doesn't replace it. Every layout Zip AI generates is made of real WordPress blocks. Your content is standard block markup in your WordPress database, edited in the same editor WordPress already ships with. No shortcodes, no separate rendering engine, no proprietary interface sitting between you and your content.
-
 === What you can do with it ===
 
 * Generate a full page from a text prompt
 * Generate individual sections (hero, pricing, FAQ, testimonials, etc.) instead of a whole page
 * Rewrite or improve copy on an existing page
 * Convert an existing HTML page into native Spectra blocks
-* Start a new page with AI instead of a blank canvas
-* Fine-tune every block afterward using the native block editor - colors, spacing, typography, layout
+* Fine-tune every block afterward using the native block editor — colors, spacing, typography, layout
 
 == Why Spectra Blocks ==
 
@@ -76,34 +69,21 @@ Every layout Zip AI produces is made entirely of Spectra Blocks. That means it's
 
 == How Spectra Blocks Works ==
 
-Spectra Blocks doesn't ship dozens of single-purpose blocks the way Spectra Legacy did. Instead, it gives you a small set of flexible blocks, plus Extensions that add advanced styling to WordPress's own core blocks.
+Spectra Blocks doesn't ship dozens of single-purpose blocks the way Spectra Legacy did. Instead, it gives you a focused set of flexible blocks, plus Extensions that add advanced design controls to WordPress's own core blocks.
 
-* **Core Spectra blocks** (Paragraph, Heading, Image, Buttons) enhanced with Extensions for spacing, borders, shadows, and responsive design
-* **Container** - the foundation for custom layouts; nest any block inside it, including core WordPress blocks and other plugins' blocks
-* **Accordion** - build FAQs and any expandable content
-* **Design Library** - pre-built patterns for testimonials, info boxes, pricing tables, and comparisons, all built from core blocks and Containers
+**Text and Buttons** are Spectra's own content blocks. The Text block handles everything from headings (H1 to H6) to paragraphs, and the Buttons block creates fully customizable button groups.
 
-Missing a block you used in Spectra Legacy? It's probably not gone - it's just built differently now. A testimonial is a Container with Image, Heading, and Paragraph inside it. A pricing table works the same way. If you'd rather use the original dedicated block exactly as it was, Spectra Legacy still has it.
+**Extensions for core blocks** add advanced spacing, border, shadow, and responsive controls to the core blocks you already use, like Image. You keep WordPress's own blocks and get more design power on top.
 
-== Who It's For ==
+**Container** is the foundation for custom layouts — nest any block inside it, including core WordPress blocks and other plugins' blocks.
 
-* **WordPress beginners** who want AI to remove the blank-page problem, without locking them into a proprietary builder
-* **Freelancers and agencies** building client sites faster, without adding a page-builder dependency clients will be stuck maintaining
-* **Bloggers and creators** who want well-designed pages without hand-building every section
-* **WooCommerce store owners** building product and landing pages that load fast
-* **Marketers** who need landing pages shipped quickly
-* **Anyone leaving Elementor, Divi, or Beaver Builder** who wants page-builder speed without the page-builder framework
-* **Existing Spectra users** ready to move to the actively-developed version, whenever that makes sense for them
+**Layout and content blocks** include Accordion, Tabs, Slider, List, Icon, Separator, and Google Map.
 
-== Performance ==
+**Dynamic and engagement blocks** include Post (grid, masonry, and carousel layouts), Countdown, Counter, Modal, and Popup Builder.
 
-Spectra Blocks is built directly on WordPress's core block APIs - not layered on top of them the way Spectra Legacy had to be, since many of those APIs didn't exist yet when Legacy was built.
+**Design Library** provides pre-built patterns for testimonials, info boxes, pricing tables, and comparisons, all built from Spectra Blocks.
 
-* Lighter editor overhead and a more responsive editing experience
-* Cleaner, more semantic front-end code
-* Loads only the CSS a page actually uses
-* No proprietary rendering engine sitting between your content and your theme
-* Built to stay in step with WordPress as the platform evolves, reducing the update-related breakage some users saw with Legacy's custom controls
+Missing a block you used in Spectra Legacy? It's probably not gone - it's just built differently now. A testimonial is a Container with an Image, Text, and Buttons inside it. A pricing table works the same way. If you'd rather use the original dedicated block exactly as it was, Spectra Legacy still has it.
 
 == Compatibility ==
 
@@ -137,19 +117,16 @@ Spectra Blocks works with any standards-compliant WordPress theme. It has been t
 
 == Coming from Spectra Legacy? ==
 
-If you're already using Spectra (the original plugin, published under the "Ultimate Addons for Gutenberg" slug), here's what you need to know:
+Spectra Legacy (the original plugin, published as "Ultimate Addons for Gutenberg") isn't going anywhere — it keeps getting maintenance updates, compatibility fixes, and security patches.
 
-* **Spectra Legacy isn't going anywhere.** It keeps receiving maintenance updates, compatibility fixes, and security patches. There are no plans to remove it, and if that ever changes, we'll give plenty of advance notice.
-* **Your existing site keeps working exactly as it does now.** Nothing about the plugin you're currently running changes.
-* **Spectra Blocks is a separate, new plugin.** It's not an update to your current install - it's a different product, built for AI-first, composable page building.
-* **New features are being built in Spectra Blocks going forward.** Zip AI and future capabilities are exclusive to this plugin.
-* **Running both at once is normal, not a mistake.** Most people transitioning will run Spectra Legacy and Spectra Blocks side by side for a while - existing pages keep working on Legacy while new pages are built in Blocks. Each plugin only loads assets for the blocks a page actually uses, so this isn't a heavy tax. It's just not meant to be permanent - once a site no longer uses any Legacy blocks, you can deactivate Spectra Legacy.
-* **Global settings don't carry over automatically.** Global Colors, Global Typography, and default block settings are separate between the two plugins. You'll set these up fresh in Spectra Blocks; your Legacy settings stay untouched.
-* **Custom CSS and code may need updating.** Spectra Blocks uses new block markup, so custom CSS or code written against Legacy's classes will need to be updated for any sections you rebuild in Spectra Blocks. Legacy pages are unaffected as long as Spectra Legacy stays active.
-* **Rebuilding a page won't change its URL.** Your links, menus, and SEO stay intact. The output is cleaner, more semantic HTML, which is generally a plus for SEO - just keep headings and URLs consistent as you rebuild.
-* **There's no deadline to switch.** Move whenever it makes sense for your workflow. For brand-new projects, we recommend starting with Spectra Blocks, since it's the actively developed version - unless a specific block you need only exists in Legacy.
+Spectra Blocks is a separate new plugin, not an update to your existing install. Running both side by side is normal during a transition: existing pages keep working on Legacy while you build new ones in Blocks. Once no pages use Legacy blocks, you can deactivate it.
 
-In short: Spectra Legacy is stable and supported. Spectra Blocks is where we're building next. Both are safe choices - one just goes further.
+A few things to know when you move:
+
+* Global Colors, Typography, and default block settings are not shared between the two plugins — you'll set them up fresh in Spectra Blocks.
+* Custom CSS written for Legacy block classes will need updating for any sections you rebuild in Spectra Blocks. Legacy pages are unaffected as long as Legacy stays active.
+* Rebuilding a page doesn't change its URL, so links and SEO stay intact.
+* There's no deadline. For new projects, start with Spectra Blocks — it's the actively developed version.
 
 == Support ==
 
@@ -247,17 +224,6 @@ Nothing's been removed - Spectra Legacy still has them, and your existing Legacy
 
 Please report security issues responsibly through our security disclosure process rather than posting them publicly. Details are available on the plugin's support page.
 
-== Screenshots ==
-
-1. Generate a full page draft from a text prompt using Zip AI.
-2. Refine an AI-generated layout using native Gutenberg blocks.
-3. Build a custom layout using the Container block and core WordPress blocks.
-4. Generate an individual section (e.g. pricing, FAQ) instead of a full page.
-5. Browse ready-made patterns in the Design Library.
-6. Global Styles controls for consistent colors, typography, and spacing site-wide.
-7. Popup Builder using native blocks.
-8. Coming Soon mode enabled on a single page.
-
 == Source Code ==
 
 This plugin's JavaScript and CSS are built from source files using standard WordPress build tools.
@@ -324,7 +290,7 @@ When AI features are enabled, the plugin checks the credit balance for AI conten
 * [Privacy Policy](https://startertemplates.com/privacy-policy/)
 
 = Brainstorm Force Store =
-When the "Get Spectra Pro" upsell is displayed in the admin dashboard, pricing information is fetched from the Brainstorm Force store. This request is made by the administrator's browser, not the plugin server.
+When the "Get Spectra Blocks Pro" upsell is displayed in the admin dashboard, pricing information is fetched from the Brainstorm Force store. This request is made by the administrator's browser, not the plugin server.
 * Service URL: `https://store.brainstormforce.com/`
 * [Terms of Service](https://www.brainstormforce.com/terms-and-conditions/)
 * [Privacy Policy](https://www.brainstormforce.com/privacy-policy/)
@@ -378,60 +344,10 @@ The admin dashboard "What's New" panel fetches an RSS feed from wpspectra.com to
 
 == Changelog ==
 
-= 0.0.9 =
-* New: MCP server integration with WordPress Abilities API — AI assistants can now read and modify page content via registered abilities.
-* New: Added Create Post and Display Conditions abilities to the AI toolset.
-* New: ZIP AI connect flow with install/activate button states in the AI dashboard.
-* New: WPML translation compatibility (wpml-config.xml rebuilt for all block attributes).
+= 1.0.0 - Monday, 13th July 2026 =
+* Initial release of Spectra Blocks.
 
-= 0.0.8 =
-* New: Added Display Conditions extension for login state visibility control.
-* New: Added Post, SVG Animator, and Mega Menu blocks to the admin dashboard.
-* Fix: Popup Builder — legacy spectra-popup posts now appear in the spectra-blocks popup list with full column support.
-* Fix: Popup Builder — skip uagb/ block popups when UAGB is inactive to prevent broken frontend output.
-* Fix: SVG Animator responsive controls now correctly use the spectra-pro/svg-animator block name.
-* Fix: SVG Animators flex layout delegated to WordPress layout support for correct justification in editor.
-* Fix: Design Library toggle shows correctly for sites with UAGB v2 and spectra-blocks both active.
-* Fix: Spectra Blocks category icon now displays correctly in the block inserter.
-* Update: Tested up to WordPress 7.0.
 
-= 0.0.7 =
-* Fix: Duplicate Enable/Disable column on Spectra Classic Popup Builder when UAGB beta is active.
-* Fix: Slider — exposed window.Swiper for ES module editor bundle compatibility.
 
-= 0.0.6 =
-* Fix: Removed server-side IP geolocation lookups (WordPress.org compliance).
-* Fix: Hardened the SVG upload sanitizer to fail closed when the sanitizer library is unavailable.
-* Update: Documented all external services accessed by the plugin in readme.txt.
-
-= 0.0.5 =
-* Fix: Externalized Swiper library from webpack build.
-* Fix: Improved Swiper asset loading via block.json declarations for proper editor iframe and frontend support.
-* Fix: Updated GitHub repository URLs for source repositories.
-
-= 0.0.4 =
-* Fix: Updated Swiper library to v12.1.3.
-* Fix: Added wp_kses() escaping at render output point in HtmlSanitizer.
-* Fix: Wired lib-abspath-guard into grunt zip build pipeline.
-
-= 0.0.3 =
-* Fix: Added ABSPATH guards to all generated .asset.php files via webpack plugin.
-* Fix: Added wp_unslash() before sanitization on all superglobal accesses.
-* Fix: Added function_exists() guards around core file includes.
-* Fix: Added capability check to SVG upload filter.
-* Fix: Updated all shared libraries to latest versions.
-
-= 0.0.2 =
-* Fix: Address WordPress.org plugin review compliance issues.
-* Fix: Sanitize all input data and escape all output.
-* Fix: Use wp_print_inline_script_tag() for inline scripts.
-* Fix: Prefix all global variables and class names.
-* Fix: Bundle learn section images locally.
-* Fix: Remove direct plugin activation and theme switching.
-* Fix: Document all external services in readme.txt.
-* Update: Tested up to WordPress 6.9.
-
-= 0.0.1 =
-* Initial release.
 
 

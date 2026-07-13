@@ -5,7 +5,7 @@
  * Creates a spectra/content block (heading or paragraph).
  *
  * @package Spectra_Blocks
- * @since 0.0.9
+ * @since 1.0.0
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -23,7 +23,7 @@ if ( ! class_exists( 'Spectra_Blocks_Ability_Create_Content' ) ) {
 		/**
 		 * Gate: write ability.
 		 *
-		 * @since 0.0.9
+		 * @since 1.0.0
 		 * @var string
 		 */
 		protected $gated = 'spectra_blocks_enable_edit_abilities';
@@ -62,8 +62,8 @@ if ( ! class_exists( 'Spectra_Blocks_Ability_Create_Content' ) ) {
 		protected function get_annotations() {
 			return array(
 				'readonly'      => false,
-				'destructive'   => false,
-				'idempotent'    => true,
+				'destructive'   => true,
+				'idempotent'    => false,
 				'openWorldHint' => false,
 			);
 		}
@@ -126,15 +126,21 @@ if ( ! class_exists( 'Spectra_Blocks_Ability_Create_Content' ) ) {
 			$allowed_tags = array( 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'div', 'span' );
 			$tag_name     = isset( $input['tag_name'] ) && in_array( $input['tag_name'], $allowed_tags, true ) ? $input['tag_name'] : 'h2';
 			$text         = wp_kses_post( $input['text'] );
-			$text_align   = isset( $input['text_align'] ) ? $input['text_align'] : 'left';
-			$post_id      = isset( $input['post_id'] ) ? absint( $input['post_id'] ) : null;
-			$mode         = isset( $input['mode'] ) ? $input['mode'] : 'append';
-			$block_id     = wp_generate_uuid4();
+
+			if ( '' === $text ) {
+				return new WP_Error( 'spectra_blocks_invalid_text', __( 'Text content cannot be empty.', 'spectra-blocks' ), array( 'status' => 400 ) );
+			}
+
+			$text_align = isset( $input['text_align'] ) ? $input['text_align'] : 'left';
+			$post_id    = isset( $input['post_id'] ) ? absint( $input['post_id'] ) : null;
+			$mode       = isset( $input['mode'] ) ? $input['mode'] : 'append';
+			$block_id   = wp_generate_uuid4();
 
 			$attrs = array(
-				'block_id'         => $block_id,
-				'tagName'          => $tag_name,
-				'textAlignDesktop' => $text_align,
+				'block_id' => $block_id,
+				'tagName'  => $tag_name,
+				'text'     => $text,
+				'style'    => array( 'typography' => array( 'textAlign' => $text_align ) ),
 			);
 
 			$attrs_json = wp_json_encode( $attrs );

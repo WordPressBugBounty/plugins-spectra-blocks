@@ -71,6 +71,17 @@ class Renderer {
 			$json = self::$icon_array_merged;
 		}
 
+		// Legacy alias fallback: the library keys icons by FA6 primary name
+		// only — content authored against an old name ('check-circle')
+		// resolved to nothing and the block rendered an empty wrapper.
+		// Remap through the generated alias index before giving up.
+		if ( ! isset( $json[ $icon ] ) ) {
+			$aliases = Core::backend_load_font_awesome_icon_aliases();
+			if ( isset( $aliases[ $icon ] ) ) {
+				$icon = $aliases[ $icon ];
+			}
+		}
+
 		$icon_brand_or_solid = isset( $json[ $icon ]['svg']['brands'] ) ? $json[ $icon ]['svg']['brands'] : ( isset( $json[ $icon ]['svg']['solid'] ) ? $json[ $icon ]['svg']['solid'] : array() );
 		$path                = $icon_brand_or_solid['path'] ?? '';
 		$view                = isset( $icon_brand_or_solid['width'] ) && isset( $icon_brand_or_solid['height'] ) ? '0 0 ' . $icon_brand_or_solid['width'] . ' ' . $icon_brand_or_solid['height'] : null;
@@ -87,7 +98,7 @@ class Renderer {
 
 			$svg_classes = implode( ' ', $class_array );
 			?>
-			<svg class="<?php echo esc_attr( $svg_classes ); ?>" xmlns="https://www.w3.org/2000/svg" viewBox="<?php echo esc_attr( $view ); ?>"
+			<svg class="<?php echo esc_attr( $svg_classes ); ?>" xmlns="https://www.w3.org/2000/svg" viewBox="<?php echo esc_attr( $view ); ?>" fill="currentColor"
 				<?php
 				// If RTL inversion is required, mirror the SVG.
 				$rtl_css_for_svg = array();
@@ -179,7 +190,7 @@ class Renderer {
 
 		// Create the required classes for the video wrapper.
 		// Remove overlay class - let responsive CSS handle all overlay logic per breakpoint.
-		$background_video_classes = 'spectra-background-video__wrapper spectra-overlay-color';
+		$background_video_classes = 'spectra-background-video__wrapper spectra-background-video__wrapper--overlay spectra-overlay-color';
 
 		// Create a separate element that appears before the actual children of this wrapper.
 		?>

@@ -6,7 +6,7 @@
  * for all Spectra Blocks abilities.
  *
  * @package Spectra_Blocks
- * @since 0.0.9
+ * @since 1.0.0
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Class Spectra_Blocks_Abstract_Ability.
  *
- * @since 0.0.9
+ * @since 1.0.0
  */
 abstract class Spectra_Blocks_Abstract_Ability {
 
@@ -25,7 +25,7 @@ abstract class Spectra_Blocks_Abstract_Ability {
 	 *
 	 * Write abilities use 'spectra_blocks_enable_edit_abilities'.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 * @var string
 	 */
 	protected $gated = '';
@@ -33,7 +33,7 @@ abstract class Spectra_Blocks_Abstract_Ability {
 	/**
 	 * Get the ability name (slug).
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 * @return string
 	 */
 	abstract protected function get_name();
@@ -41,7 +41,7 @@ abstract class Spectra_Blocks_Abstract_Ability {
 	/**
 	 * Get the ability label.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 * @return string
 	 */
 	abstract protected function get_label();
@@ -49,7 +49,7 @@ abstract class Spectra_Blocks_Abstract_Ability {
 	/**
 	 * Get the ability description.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 * @return string
 	 */
 	abstract protected function get_description();
@@ -57,7 +57,7 @@ abstract class Spectra_Blocks_Abstract_Ability {
 	/**
 	 * Get the ability category slug.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 * @return string
 	 */
 	abstract protected function get_category();
@@ -65,7 +65,7 @@ abstract class Spectra_Blocks_Abstract_Ability {
 	/**
 	 * Get the input schema.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 * @return array
 	 */
 	abstract protected function get_input_schema();
@@ -73,7 +73,7 @@ abstract class Spectra_Blocks_Abstract_Ability {
 	/**
 	 * Get the output schema.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 * @return array
 	 */
 	abstract protected function get_output_schema();
@@ -81,7 +81,7 @@ abstract class Spectra_Blocks_Abstract_Ability {
 	/**
 	 * Execute the ability.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 * @param array $input Validated input.
 	 * @return array|WP_Error
 	 */
@@ -90,7 +90,7 @@ abstract class Spectra_Blocks_Abstract_Ability {
 	/**
 	 * Get the required WordPress capability.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 * @return string
 	 */
 	protected function get_required_capability() {
@@ -100,7 +100,7 @@ abstract class Spectra_Blocks_Abstract_Ability {
 	/**
 	 * Get the MCP annotations.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 * @return array
 	 */
 	protected function get_annotations() {
@@ -115,7 +115,7 @@ abstract class Spectra_Blocks_Abstract_Ability {
 	/**
 	 * Check if the ability is enabled based on its gate.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 * @return bool
 	 */
 	public function is_enabled() {
@@ -128,7 +128,7 @@ abstract class Spectra_Blocks_Abstract_Ability {
 	/**
 	 * Permission callback: 3-layer gate (master toggle → per-category gate → WP capability).
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 * @return bool
 	 */
 	public function check_permission() {
@@ -146,7 +146,7 @@ abstract class Spectra_Blocks_Abstract_Ability {
 	/**
 	 * Register the ability with WordPress.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 * @return void
 	 */
 	public function register() {
@@ -163,6 +163,7 @@ abstract class Spectra_Blocks_Abstract_Ability {
 				'meta'                => array(
 					'annotations'  => $this->get_annotations(),
 					'show_in_rest' => true,
+					'mcp'          => array( 'public' => true ),
 				),
 			)
 		);

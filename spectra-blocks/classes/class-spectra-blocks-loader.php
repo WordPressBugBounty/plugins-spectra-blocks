@@ -154,7 +154,7 @@ class Spectra_Blocks_Loader {
 	/**
 	 * Sync library text domains to the plugin text domain.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 * @param string $textdomain The library text domain.
 	 * @return string The plugin text domain.
 	 */
@@ -170,6 +170,15 @@ class Spectra_Blocks_Loader {
 		if ( ! get_option( 'spectra_blocks_active_blocks' ) ) {
 			update_option( 'spectra_blocks_active_blocks', array() );
 		}
+
+		// Bump the Global Styles JIT version stamp so every per-post cached
+		// stylesheet recompiles under the current compiler — necessary after
+		// a compiler upgrade that changes selector-escaping, breakpoint
+		// semantics, or the utility grammar (GIT-106 cutover).
+		if ( class_exists( '\\SpectraBlocks\\GlobalStyles\\JitCache' ) ) {
+			\SpectraBlocks\GlobalStyles\JitCache::bump_version();
+		}
+
 		update_option( '__spectra_blocks_do_redirect', true );
 		flush_rewrite_rules();
 	}
@@ -188,7 +197,7 @@ class Spectra_Blocks_Loader {
 	 * version via a global variable; the highest version wins and its
 	 * entry-point is included on the specified hook.
 	 *
-	 * @since 0.0.9
+	 * @since 1.0.0
 	 *
 	 * @param string $version_file Absolute path to the library's version.json.
 	 * @param string $lib_key      Key inside version.json (e.g. 'zip-ai').

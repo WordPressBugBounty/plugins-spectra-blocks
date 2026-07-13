@@ -244,6 +244,6 @@
   "style": [
     "file:./style-index.css",
     "spectra-blocks-common",
-    "swiper-style"
+    "spectra-blocks-swiper-style"
   ]
 }

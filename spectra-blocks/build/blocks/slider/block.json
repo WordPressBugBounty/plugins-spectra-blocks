@@ -216,25 +216,25 @@
     }
   },
   "editorScript": [
-    "swiper-script",
+    "spectra-blocks-swiper-script",
     "file:./index.js"
   ],
   "editorStyle": [
-    "swiper-style",
+    "spectra-blocks-swiper-style",
     "file:./index.css"
   ],
   "style": [
     "file:./style-index.css",
     "spectra-blocks-common",
-    "spectra-components-icon-picker"
+    "spectra-blocks-components-icon-picker"
   ],
   "render": "file:./view.php",
   "viewScript": [
-    "swiper-script",
+    "spectra-blocks-swiper-script",
     "file:./view.js"
   ],
   "viewStyle": [
-    "swiper-style",
+    "spectra-blocks-swiper-style",
     "spectra-blocks-common"
   ],
   "providesContext": {

@@ -90,6 +90,53 @@ class Animations {
 	 */
 	public function enqueue_block_assets() {
 
+		// AOS is a front-end-only scroll library, and authored scroll-reveals
+		// can't reliably re-fire across Gutenberg's block re-renders
+		// (select/deselect/edit re-mounts the DOM, and the reveal JS doesn't
+		// re-scan the fresh nodes) — so reveal content gets stuck in its hidden
+		// start state. We do NOT run the animation here; we inject a static reset
+		// that shows every reveal element in its FINAL state. Plain CSS keeps
+		// applying to re-rendered nodes with no JS re-binding; the front-end
+		// animation is unchanged (this reset is editor-only).
+		//
+		// Targets, in order of reliability:
+		// - `data-aos` / `data-animate` / `data-reveal` — attribute conventions.
+		// - `-spectra-anim` — the reserved convention SUFFIX authored reveals carry
+		// (SSOT); matched explicitly so the convention always wins.
+		// - `-anim` — DASH-anchored, matches any `-anim`/`-animate` compound class.
+		// - `-reveal` / `-fade` — common reveal suffixes as a safety net for
+		// imports that predate / don't follow the convention.
+		// All class tokens are DASH-anchored (`-token`) so they only fire on
+		// compound reveal classes (`hero-fade`, `mng-reveal`) and skip unrelated
+		// words (`faded`, `animation-wrapper`). NOTE: the reset also clears
+		// `transform` (the entrance OFFSET for a reveal — correct here), so tokens
+		// matching LAYOUT-transform elements (`slide`/`carousel`/`zoom`, bare
+		// `-in`) are deliberately EXCLUDED to avoid flattening slider positioning.
+		if ( is_admin() ) {
+			$reset_handle    = 'spectra-blocks-aos-editor-reset';
+			$reset_selectors = implode(
+				',',
+				array(
+					'[data-aos]',
+					'[data-animate]',
+					'[data-reveal]',
+					'[class*="-spectra-anim"]',
+					'[class*="-anim"]',
+					'[class*="-reveal"]',
+					'[class*="-fade"]',
+				)
+			);
+			// phpcs:ignore WordPress.WP.EnqueuedResourceParameters -- Inline-only stylesheet; no src/version needed.
+			wp_register_style( $reset_handle, false, array(), null );
+			wp_enqueue_style( $reset_handle );
+			wp_add_inline_style(
+				$reset_handle,
+				$reset_selectors . '{opacity:1 !important;transform:none !important;}'
+			);
+
+			return;
+		}
+
 		if ( ! wp_script_is( 'spectra-blocks-aos-js', 'registered' ) ) {
 			wp_register_script( 'spectra-blocks-aos-js', SPECTRA_BLOCKS_URL . 'assets/js/aos.min.js', array(), SPECTRA_BLOCKS_VER, true );
 		}
@@ -197,7 +244,7 @@ class Animations {
 	 * @return bool
 	 */
 	private function is_allowed_block( $block_name ) {
-		return preg_match( '/^(spectra\/|spectra-pro\/|core\/)/', $block_name );
+		return preg_match( '/^(spectra\/|spectra-pro\/|uagb\/|core\/)/', $block_name );
 	}
 
 	/**
