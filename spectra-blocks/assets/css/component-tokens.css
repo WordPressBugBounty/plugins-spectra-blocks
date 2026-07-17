@@ -210,56 +210,6 @@
 }
 
 /* ================================================================
-   GLOBAL FORM INPUT OVERRIDE
-   Targets all form elements — no class needed on patterns.
-   ================================================================ */
-
-:where(
-.entry-content
-input:not([type="submit"]):not([type="button"]):not([type="reset"]):not(
-	[type="checkbox"]
-):not([type="radio"]):not([type="hidden"])
-),
-:where(.entry-content textarea),
-:where(.entry-content select),
-:where(.wp-block-search__input) {
-	background-color: var(--spectra-input-bg);
-	color: var(--spectra-input-text);
-	border-color: var(--spectra-input-border-color);
-	border-width: var(--spectra-input-border-width);
-	border-style: var(--spectra-input-border-style);
-	border-radius: var(--spectra-radius-input);
-	transition:
-		border-color var(--spectra-transition-normal, 250ms) ease,
-		box-shadow var(--spectra-transition-normal, 250ms) ease;
-}
-
-:where(
-.entry-content
-input:not([type="submit"]):not([type="button"]):not([type="reset"]):not(
-	[type="checkbox"]
-):not([type="radio"]):not([type="hidden"])::placeholder
-),
-:where(.entry-content textarea::placeholder),
-:where(.wp-block-search__input::placeholder) {
-	color: var(--spectra-input-placeholder);
-}
-
-:where(
-.entry-content
-input:not([type="submit"]):not([type="button"]):not([type="reset"]):not(
-	[type="checkbox"]
-):not([type="radio"]):not([type="hidden"])
-):focus,
-:where(.entry-content textarea):focus,
-:where(.entry-content select):focus,
-:where(.wp-block-search__input):focus {
-	border-color: var(--spectra-input-focus-border);
-	box-shadow: var(--spectra-input-focus-shadow);
-	outline: none;
-}
-
-/* ================================================================
    BADGES / TAGS
    sg-badge → applied to eyebrow labels by pattern team
    ================================================================ */
@@ -352,60 +302,6 @@ input:not([type="submit"]):not([type="button"]):not([type="reset"]):not(
 .sg-button-fit .spectra-button__link,
 .sg-button-fit .wp-block-spectra-button {
 	width: fit-content;
-}
-
-/* ================================================================
-   GLOBAL IMAGE OVERRIDE
-   Targets all block images — no class needed on patterns.
-   Applies shadow, border, overlay, and filter.
-
-   border-radius is set ONLY on the figure parent (which carries
-   `overflow: hidden`), never on the inner <img>. Two reasons:
-     1. The figure's overflow:hidden + border-radius already clips
-        the inner image to rounded corners for Block-UI users — no
-        img-level radius needed.
-     2. WP core/image block validation rejects className attributes
-        on the inner <img> (`save()` only emits class on the figure).
-        So a Tailwind `rounded-*` utility CAN'T live on the img.
-        Keeping img-level radius makes it impossible for SaaS to
-        opt out of image rounding without breaking block validation.
-   ================================================================ */
-
-:where(.entry-content .wp-block-image img) {
-	filter: var(--spectra-image-filter);
-}
-
-.entry-content .wp-block-image {
-	position: relative;
-	overflow: hidden;
-	border-radius: var(--spectra-radius-image);
-}
-
-/* Image shadow and border from image treatment tokens. */
-.entry-content .wp-block-image figure,
-.entry-content figure.wp-block-image {
-	border-radius: var(--spectra-radius-image);
-	box-shadow: var(--spectra-shadow-sm);
-	border: var(--spectra-image-border);
-	overflow: hidden;
-}
-
-/* Image overlay via ::after pseudo-element. */
-.entry-content .wp-block-image::after {
-	content: "";
-	position: absolute;
-	inset: 0;
-	background: var(--spectra-image-overlay);
-	pointer-events: none;
-	border-radius: inherit;
-}
-
-/* Spectra image blocks also get treatment. */
-:where(.entry-content .wp-block-spectra-image img) {
-	border-radius: var(--spectra-radius-image);
-	box-shadow: var(--spectra-shadow-sm);
-	border: var(--spectra-image-border);
-	filter: var(--spectra-image-filter);
 }
 
 /* Object-fit propagation for core/image figures.
@@ -559,19 +455,6 @@ input:not([type="submit"]):not([type="button"]):not([type="reset"]):not(
 }
 
 /* ================================================================
-   GLOBAL DIVIDER / SEPARATOR OVERRIDE
-   Targets all hr and separator blocks — no class needed.
-   ================================================================ */
-
-:where(.entry-content hr),
-:where(.entry-content .wp-block-separator) {
-	border-color: var(--spectra-divider-color);
-	border-width: var(--spectra-divider-width);
-	border-style: var(--spectra-divider-style);
-	opacity: 1;
-}
-
-/* ================================================================
    GLOBAL NAVIGATION OVERRIDE
    Targets navigation blocks and header areas.
    ================================================================ */
@@ -682,58 +565,6 @@ input:not([type="submit"]):not([type="button"]):not([type="reset"]):not(
 .sg-accordion
 .wp-block-spectra-accordion-child-details.wp-block-spectra-accordion-child-details {
 	padding-top: 0;
-}
-
-/* ================================================================
-   PHASE 4 — BEAT COMPETITION
-   ================================================================ */
-
-/* ================================================================
-   MICRO-INTERACTIONS
-   :active press scale on buttons.
-   ================================================================ */
-
-.wp-element-button:active,
-.wp-block-button__link:active,
-.spectra-button__link:active {
-	transform: scale(var(--spectra-btn-press-scale)) !important;
-}
-
-/* ================================================================
-   ACCESSIBILITY
-   :focus-visible ring on all interactive elements.
-   ================================================================ */
-
-.wp-element-button:focus-visible,
-.wp-block-button__link:focus-visible,
-.spectra-button__link:focus-visible,
-.sg-card a:focus-visible,
-.entry-content a:focus-visible {
-	outline:
-		var(--spectra-focus-ring-width) var(--spectra-focus-ring-style)
-		var(--spectra-focus-ring-color) !important;
-	outline-offset: var(--spectra-focus-ring-offset) !important;
-}
-
-.entry-content input:focus-visible,
-.entry-content textarea:focus-visible,
-.entry-content select:focus-visible {
-	outline:
-		var(--spectra-focus-ring-width) var(--spectra-focus-ring-style)
-		var(--spectra-focus-ring-color) !important;
-	outline-offset: var(--spectra-focus-ring-offset) !important;
-}
-
-/* Editor-only: suppress focus-visible outline on buttons/links while editing.
-   The Gutenberg iframe body carries .editor-styles-wrapper so this only
-   fires inside the block editor canvas, not on the frontend. */
-.editor-styles-wrapper .wp-element-button:focus-visible,
-.editor-styles-wrapper .wp-block-button__link:focus-visible,
-.editor-styles-wrapper .spectra-button__link:focus-visible,
-.editor-styles-wrapper .sg-card a:focus-visible,
-.editor-styles-wrapper .entry-content a:focus-visible {
-	outline: none !important;
-	outline-offset: 0 !important;
 }
 
 /* ================================================================

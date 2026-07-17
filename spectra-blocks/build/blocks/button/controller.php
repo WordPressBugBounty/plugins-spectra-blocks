@@ -14,6 +14,17 @@ use SpectraBlocks\Helpers\Core;
 $text = $attributes['text'] ?? '';
 $icon = $attributes['icon'] ?? '';
 
+// The label must never contain an anchor: view.php always wraps it in an <a>,
+// and nested anchors are invalid HTML that the browser parser tears apart.
+// Strip <a> tags (keeping inner text and all other formatting) via a kses
+// allowlist, which also neutralizes malformed anchors that a regex would miss.
+// Editor-side counterpart: removeAnchorTag() in @spectra-helpers.
+if ( '' !== $text ) {
+	$allowed_label_tags = wp_kses_allowed_html( 'post' );
+	unset( $allowed_label_tags['a'] );
+	$text = wp_kses( $text, $allowed_label_tags );
+}
+
 // Bail out if both text and icon are empty.
 if ( empty( $text ) && empty( $icon ) ) {
 	return;

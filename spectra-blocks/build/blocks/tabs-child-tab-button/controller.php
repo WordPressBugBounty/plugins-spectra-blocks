@@ -11,9 +11,20 @@ use SpectraBlocks\Helpers\BlockAttributes;
 use SpectraBlocks\Helpers\Core;
 
 // Ensure attributes exist.
-$current_tab   = $attributes['currentTab'] ?? 0;
-$text          = ! empty( $attributes['text'] ) ? $attributes['text'] : ( $attributes['placeholder'] ?? __( 'Tab', 'spectra-blocks' ) );
-$show_text     = $attributes['showText'] ?? true;
+$current_tab = $attributes['currentTab'] ?? 0;
+$text        = ! empty( $attributes['text'] ) ? $attributes['text'] : ( $attributes['placeholder'] ?? __( 'Tab', 'spectra-blocks' ) );
+$show_text   = $attributes['showText'] ?? true;
+
+// The label must never contain an anchor: view.php always wraps it in a <button>,
+// and an anchor nested inside a button is invalid, conflicting interactive HTML.
+// Strip <a> tags (keeping inner text and all other formatting) via a kses
+// allowlist, which also neutralizes malformed anchors that a regex would miss.
+// Editor-side counterpart: removeAnchorTag() in @spectra-helpers.
+if ( '' !== $text ) {
+	$allowed_label_tags = wp_kses_allowed_html( 'post' );
+	unset( $allowed_label_tags['a'] );
+	$text = wp_kses( $text, $allowed_label_tags );
+}
 $icon          = $attributes['icon'] ?? $block->context['spectra/tabs/icon'] ?? '';
 $icon_position = $attributes['iconPosition'] ?? $block->context['spectra/tabs/iconPosition'] ?? 'after';
 $flip_for_rtl  = $attributes['flipForRTL'] ?? false;

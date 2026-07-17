@@ -53,9 +53,11 @@ class Spectra_Blocks_Loader {
 		require_once $classes_dir . 'class-spectra-blocks-security-helper.php';
 		require_once $classes_dir . 'class-spectra-blocks-helper.php';
 		require_once $classes_dir . 'class-spectra-blocks-admin-helper.php';
+		require_once $classes_dir . 'class-spectra-blocks-rollback.php';
 		require_once $classes_dir . 'class-spectra-blocks-rest-api.php';
 
 		Spectra_Blocks_Rest_Api::init();
+		Spectra_Blocks_Rollback::init();
 		add_action( 'init', array( 'Spectra_Blocks_Helper', 'init' ) );
 
 		// Shared BSF libraries — use class_exists / global version negotiation

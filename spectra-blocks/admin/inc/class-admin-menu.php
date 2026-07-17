@@ -292,11 +292,13 @@ class Admin_Menu {
 	 */
 	public function add_action_links( $links ) {
 
-		$default_url = admin_url( 'admin.php?page=' . $this->menu_slug );
-		$spectra_pro = \Spectra_Blocks_Admin_Helper::get_spectra_pro_url( '/pricing/', 'free-plugin', 'plugin-list', 'plugin-list' );
+		$default_url  = admin_url( 'admin.php?page=' . $this->menu_slug );
+		$rollback_url = admin_url( 'admin.php?page=' . $this->menu_slug . '&path=settings&settings=version-control' );
+		$spectra_pro  = \Spectra_Blocks_Admin_Helper::get_spectra_pro_url( '/pricing/', 'free-plugin', 'plugin-list', 'plugin-list' );
 
 		$free_links = array(
 			'<a href="' . esc_url( $default_url ) . '">' . __( 'Settings', 'spectra-blocks' ) . '</a>',
+			'<a href="' . esc_url( $rollback_url ) . '">' . __( 'Rollback', 'spectra-blocks' ) . '</a>',
 		);
 
 		// Check if Spectra Pro plugin is not active.
@@ -538,6 +540,7 @@ class Admin_Menu {
 				'enable_edit_abilities_nonce'         => wp_create_nonce( 'spectra_blocks_enable_edit_abilities' ),
 				'enable_mcp_server_nonce'             => wp_create_nonce( 'spectra_blocks_enable_mcp_server' ),
 				'is_mcp_adapter_active'               => class_exists( 'WP\\MCP\\Plugin' ),
+				'rollback_url'                        => esc_url( add_query_arg( 'version', 'VERSION', wp_nonce_url( admin_url( 'admin-post.php?action=spectra_blocks_rollback' ), 'spectra_blocks_rollback' ) ) ),
 				'rest_url'                            => get_rest_url(),
 				'current_username'                    => wp_get_current_user()->user_login,
 				'application_passwords_url'           => admin_url( 'profile.php#application-passwords-section' ),

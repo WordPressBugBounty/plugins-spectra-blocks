@@ -49,5 +49,16 @@ $wrapper_attributes = BlockAttributes::get_wrapper_attributes( $attributes, $con
 // Add the text if it exists, else make the placeholder as the text.
 $text = ! empty( $attributes['text'] ) ? $attributes['text'] : __( 'Get started by writing something!', 'spectra-blocks' );
 
+// The label must never contain an anchor: view.php always wraps it in an
+// element with role="button" that toggles the modal, and a link inside it
+// would hijack the click. Strip <a> tags (keeping inner text and all other
+// formatting) via a kses allowlist, which also neutralizes malformed anchors
+// that a regex would miss. Editor-side counterpart: removeAnchorTag() in @spectra-helpers.
+if ( '' !== $text ) {
+	$allowed_label_tags = wp_kses_allowed_html( 'post' );
+	unset( $allowed_label_tags['a'] );
+	$text = wp_kses( $text, $allowed_label_tags );
+}
+
 // return the view.
 return 'file:./view.php';

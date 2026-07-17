@@ -51,10 +51,14 @@ class Helper {
 	}
 
 	/**
-	 * Get an instance of WP_Filesystem_Direct.
+	 * Get an instance of WP_Filesystem.
+	 *
+	 * Returns null when WP_Filesystem() fails to initialise (e.g. FTP method
+	 * selected without valid credentials), preventing fatal errors when callers
+	 * invoke filesystem methods on a partially initialised global.
 	 *
 	 * @since 1.0.0
-	 * @return object A WP_Filesystem_Direct instance.
+	 * @return \WP_Filesystem_Base|null Filesystem instance, or null on failure.
 	 */
 	public function ast_block_templates_get_filesystem() {
 		global $wp_filesystem;
@@ -63,7 +67,9 @@ class Helper {
 			require_once ABSPATH . '/wp-admin/includes/file.php';
 		}
 
-		WP_Filesystem();
+		if ( ! WP_Filesystem() ) {
+			return null;
+		}
 
 		return $wp_filesystem;
 	}
@@ -354,8 +360,7 @@ class Helper {
 			if ( ! function_exists( 'WP_Filesystem' ) ) {
 				require_once ABSPATH . 'wp-admin/includes/file.php';
 			}
-			WP_Filesystem();
-			if ( $wp_filesystem && $wp_filesystem->put_contents( trailingslashit( $file['file_base'] ) . $file['file_name'], $file['file_content'], FS_CHMOD_FILE ) ) {
+			if ( WP_Filesystem() && $wp_filesystem && $wp_filesystem->put_contents( trailingslashit( $file['file_base'] ) . $file['file_name'], $file['file_content'], FS_CHMOD_FILE ) ) {
 				self::ast_block_templates_log( 'File: ' . $file['file_name'] . ' Created Successfully!' );
 			}
 		}
@@ -387,8 +392,8 @@ class Helper {
 		if ( ! function_exists( 'WP_Filesystem' ) ) {
 			require_once ABSPATH . 'wp-admin/includes/file.php';
 		}
-		WP_Filesystem();
-		if ( file_exists( AST_BLOCK_TEMPLATES_JSON_DIR . $file_name ) && $wp_filesystem && $wp_filesystem->put_contents( AST_BLOCK_TEMPLATES_JSON_DIR . $file_name, wp_json_encode( $file_content ), FS_CHMOD_FILE ) ) {
+		$filesystem_ready = WP_Filesystem() && $wp_filesystem;
+		if ( $filesystem_ready && file_exists( AST_BLOCK_TEMPLATES_JSON_DIR . $file_name ) && $wp_filesystem->put_contents( AST_BLOCK_TEMPLATES_JSON_DIR . $file_name, wp_json_encode( $file_content ), FS_CHMOD_FILE ) ) {
 			self::ast_block_templates_log( 'File: ' . $file_name . ' Updated Successfully!' );
 		} else {
 			self::ast_block_templates_log( 'File: ' . $file_name . ' Not Updated!' );

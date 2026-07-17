@@ -61,6 +61,7 @@ class Plugin {
 		}
 		add_action( 'wp_ajax_ast_block_templates_importer', array( $this, 'template_importer' ) );
 		add_action( 'wp_ajax_ast_block_templates_activate_plugin', array( $this, 'activate_plugin' ) );
+		add_filter( 'plugins_api', array( $this, 'maybe_set_spectra_blocks_download_source' ), 10, 3 );
 		add_action( 'wp_ajax_ast_block_templates_import_wpforms', array( $this, 'import_wpforms' ) );
 		add_action( 'wp_ajax_ast_block_templates_import_sureforms', array( $this, 'import_sureforms' ) );
 		add_action( 'wp_ajax_ast_block_templates_import_block', array( $this, 'import_block' ) );
@@ -68,7 +69,6 @@ class Plugin {
 		add_action( 'wp_ajax_ast_block_templates_hide_notices', array( $this, 'hide_notices' ) );
 		add_filter( 'upload_mimes', array( $this, 'custom_upload_mimes' ) );
 		add_action( 'wp_ajax_ast_block_templates_data_option', array( $this, 'api_request' ) );
-		add_action( 'wp_ajax_ast_block_templates_check_auth_status', array( $this, 'check_auth_status' ) );
 		add_action( 'wp_ajax_ast_block_templates_save_auto_open_setting', array( $this, 'save_auto_open_setting' ) );
 		$this->get_default_color_palette();
 	}
@@ -412,15 +412,15 @@ class Plugin {
 					$ext = strtolower( pathinfo( $file_path['data']['file'], PATHINFO_EXTENSION ) );
 
 					if ( 'json' === $ext ) {
-						/** 
-						 * 
+						/**
+						 *
 						 * Retrieves the contents of a file using the specified file system.
 						 *
-						 * @var \WP_Filesystem_Base $filesystem 
+						 * @var \WP_Filesystem_Base|null $filesystem
 						 * */
-						$filesystem = Helper::instance()->ast_block_templates_get_filesystem();
-						$file_content = $filesystem->get_contents( $file_path['data']['file'] );
-						$forms = json_decode( $file_content ? $file_content : '', true );
+						$filesystem   = Helper::instance()->ast_block_templates_get_filesystem();
+						$file_content = $filesystem ? $filesystem->get_contents( $file_path['data']['file'] ) : '';
+						$forms        = json_decode( $file_content ? $file_content : '', true );
 
 						if ( ! empty( $forms ) ) {
 
@@ -518,14 +518,14 @@ class Plugin {
 		if ( isset( $file_path['data']['file'] ) ) {
 			$ext = strtolower( pathinfo( $file_path['data']['file'], PATHINFO_EXTENSION ) );
 			if ( 'json' === $ext ) {
-				/** 
-				 * 
+				/**
+				 *
 				 * Retrieves the contents of a file using the specified file system.
 				 *
-				 * @var \WP_Filesystem_Base $filesystem 
+				 * @var \WP_Filesystem_Base|null $filesystem
 				 * */
 				$filesystem   = Helper::instance()->ast_block_templates_get_filesystem();
-				$file_content = $filesystem->get_contents( $file_path['data']['file'] );
+				$file_content = $filesystem ? $filesystem->get_contents( $file_path['data']['file'] ) : '';
 
 				// Apply the form color for sureforms.
 				$adaptive_mode = $this->get_adaptive_mode();
@@ -841,33 +841,6 @@ class Plugin {
 	}
 
 	/**
-	 * Check authentication status for ZipWP
-	 *
-	 * @since 2.4.20
-	 * @return void
-	 */
-	public function check_auth_status() {
-		if ( ! current_user_can( 'manage_ast_block_templates' ) ) {
-			wp_send_json_error( __( 'You are not allowed to perform this action', 'ast-block-templates' ) );
-		}
-		
-		// Verify Nonce.
-		check_ajax_referer( 'ast-block-templates-ajax-nonce', '_ajax_nonce' );
-
-		// Check if user is authenticated by checking if tokens exist.
-		$zip_ai_settings = get_option( 'zip_ai_settings', array() );
-		$is_authenticated = ! empty( $zip_ai_settings['auth_token'] ) || ! empty( $zip_ai_settings['zip_token'] );
-		$auth_token = isset( $zip_ai_settings['auth_token'] ) ? $zip_ai_settings['auth_token'] : '';
-
-		wp_send_json_success(
-			array(
-				'is_authenticated' => $is_authenticated,
-				'auth_token'       => $auth_token,
-			)
-		);
-	}
-
-	/**
 	 * Replace content
 	 *
 	 * @param  string               $content         Content.
@@ -1045,11 +1018,14 @@ class Plugin {
 
 
 	/**
-	 * Activate a dependency plugin required by the imported pattern (e.g., form plugins).
-	 * Host plugin (Spectra/UAG) is excluded — always active. Called only on user-initiated
-	 * "Insert" action with capability and nonce checks. Permitted per WP.org guidelines
-	 * as activation to prevent errors.
+	 * Activate a plugin required by the imported pattern.
 	 *
+	 * Restricted to an allow-list of plugins the library can require (Spectra,
+	 * Spectra Blocks and the supported form plugins). Called only on a
+	 * user-initiated "Insert" action with capability and nonce checks, so the
+	 * install/activation happens with the user's explicit consent.
+	 *
+	 * @since 2.4.31
 	 * @return void
 	 */
 	public function activate_plugin() {
@@ -1066,21 +1042,39 @@ class Plugin {
 			wp_send_json_error( __( 'Plugin slug is missing.', 'ast-block-templates' ) );
 		}
 
-		// The host plugin (Spectra / UAG) is already active — skip activation.
-		$host_plugins = array(
-			'ultimate-addons-for-gutenberg/ultimate-addons-for-gutenberg.php',
-			'spectra-blocks/spectra-blocks.php',
+		/**
+		 * Plugins the library is allowed to activate on the user's behalf.
+		 *
+		 * @since 2.4.31
+		 * @param array $plugins List of plugin basenames.
+		 */
+		$allowed_plugins = apply_filters(
+			'ast_block_templates_installable_plugins',
+			array(
+				'ultimate-addons-for-gutenberg/ultimate-addons-for-gutenberg.php',
+				'spectra-blocks/spectra-blocks.php',
+				'wpforms-lite/wpforms.php',
+				'sureforms/sureforms.php',
+			)
 		);
 
-		if ( in_array( $plugin_init, $host_plugins, true ) ) {
+		if ( ! in_array( $plugin_init, $allowed_plugins, true ) ) {
+			wp_send_json_error( __( 'This plugin is not allowed to be activated.', 'ast-block-templates' ) );
+		}
+
+		if ( ! function_exists( 'is_plugin_active' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+
+		// Nothing to do when the plugin is already active.
+		if ( is_plugin_active( $plugin_init ) ) {
 			wp_send_json_success(
 				array(
-					'message' => 'Host plugin is already active.',
+					'message' => 'Plugin already active.',
 				)
 			);
 		}
 
-		// Activate dependency plugin (forms, etc.) to prevent broken patterns.
 		wp_clean_plugins_cache();
 
 		$activate = activate_plugin( $plugin_init, '', false, true );
@@ -1094,6 +1088,68 @@ class Plugin {
 				'message' => 'Plugin activated successfully.',
 			)
 		);
+	}
+
+	/**
+	 * Provide a trusted ZIP download source for plugins not yet on WordPress.org.
+	 *
+	 * The consent popup installs plugins through WordPress core's standard
+	 * `install-plugin` flow, which resolves the package via
+	 * `plugins_api( 'plugin_information' )`. Spectra Blocks is not published on
+	 * WordPress.org yet, so we intercept that lookup for its slug and return the
+	 * custom download URL — core then downloads and installs it as usual, and the
+	 * existing (allow-listed) activation handler activates it.
+	 *
+	 * Temporary bridge: once Spectra Blocks is live on WordPress.org, empty the
+	 * `ast_block_templates_plugin_zip_sources` map (or remove this method) and the
+	 * standard WordPress.org install path takes over.
+	 *
+	 * @since 2.4.31
+	 *
+	 * @param false|object|array<string, mixed> $result The result object or array. Default false.
+	 * @param string                            $action The type of information being requested.
+	 * @param object                            $args   Plugin API arguments.
+	 * @return false|object|array<string, mixed> Modified result.
+	 */
+	public function maybe_set_spectra_blocks_download_source( $result, $action, $args ) {
+		// Only the plugin details lookup carries a download link; search uses a different action.
+		if ( 'plugin_information' !== $action ) {
+			return $result;
+		}
+
+		if ( ! isset( $args->slug ) || 'spectra-blocks' !== $args->slug ) {
+			return $result;
+		}
+
+		if ( ! current_user_can( 'install_plugins' ) ) {
+			return $result;
+		}
+
+		/**
+		 * Trusted ZIP sources keyed by plugin slug, for plugins not yet on
+		 * WordPress.org. Empty the entry to fall back to the WordPress.org package.
+		 *
+		 * @since 2.4.31
+		 * @param array<string, string> $sources Map of plugin slug => ZIP URL.
+		 */
+		$sources = apply_filters(
+			'ast_block_templates_plugin_zip_sources',
+			array(
+				'spectra-blocks' => 'https://wpspectra.com/wp-content/uploads/2026/06/spectra-blocks.0.0.8.zip',
+			)
+		);
+
+		if ( empty( $sources['spectra-blocks'] ) ) {
+			return $result;
+		}
+
+		$information                = new \stdClass();
+		$information->name          = 'Spectra Blocks';
+		$information->slug          = 'spectra-blocks';
+		$information->version       = '0.0.8';
+		$information->download_link = esc_url_raw( $sources['spectra-blocks'] );
+
+		return $information;
 	}
 
 	/**
@@ -1187,6 +1243,22 @@ class Plugin {
 		$is_white_label = $this->is_white_label();
 
 		if ( $is_white_label ) {
+			return;
+		}
+
+		/**
+		 * Allows plugins to disable only the Design Library editor button and its
+		 * assets without disabling the full library (sync, import, REST API, etc.).
+		 *
+		 * Unlike `ast_block_templates_disable` which stops the entire plugin, this
+		 * filter targets only the `enqueue_block_editor_assets` callback so that
+		 * background sync and other non-UI functionality continue to work.
+		 *
+		 * @since 2.4.29
+		 *
+		 * @param bool $disable Whether to disable the editor button. Default false.
+		 */
+		if ( apply_filters( 'ast_block_templates_disable_editor_button', false ) ) {
 			return;
 		}
 
@@ -1293,8 +1365,9 @@ class Plugin {
 			if ( ! function_exists( 'WP_Filesystem' ) ) {
 				require_once ABSPATH . 'wp-admin/includes/file.php';
 			}
-			WP_Filesystem();
-			$wp_stylesheet = (string) $wp_filesystem->get_contents( $wp_stylesheet_path );
+			if ( WP_Filesystem() && $wp_filesystem ) {
+				$wp_stylesheet = (string) $wp_filesystem->get_contents( $wp_stylesheet_path );
+			}
 			$wp_stylesheet = preg_replace_callback(
 				'/html/i',
 				function( $matches ) {
@@ -1324,6 +1397,7 @@ class Plugin {
 					'sureforms_status'        => $this->get_plugin_status( 'sureforms/sureforms.php' ),
 					'spectra_status'          => $this->get_plugin_status( 'ultimate-addons-for-gutenberg/ultimate-addons-for-gutenberg.php' ),
 					'spectra_blocks_status'   => $this->get_plugin_status( 'spectra-blocks/spectra-blocks.php' ),
+					'spectra_blocks_pro_status' => $this->get_plugin_status( apply_filters( 'ast_block_templates_spectra_blocks_pro_basename', 'spectra-blocks-pro/spectra-blocks-pro.php' ) ),
 					'spectra_pro_status'      => $this->get_plugin_status( 'spectra-pro/spectra-pro.php' ),
 					'spectra_version'         => $this->get_spectra_version(),
 					'show_version_toggle'     => $this->should_show_version_toggle(),
@@ -1367,8 +1441,6 @@ class Plugin {
 					'rest_api_nonce' => wp_create_nonce( 'wp_rest' ),
 					'default_ai_categories' => Helper::instance()->get_default_ai_categories(),
 					'user_email' => get_option( 'admin_email' ),
-					'skip_zip_ai_onboarding_nonce'             => wp_create_nonce( 'skip-spectra-pro-onboarding-nonce' ),
-					'skip_zip_ai_onboarding' => get_option( 'ast_skip_zip_ai_onboarding', false ),
 					'show_onboarding' => ( 'no' !== get_option( 'ast-block-templates-show-onboarding', true ) ),
 					'dynamic_content' => get_option( 'ast-templates-ai-content', array() ),
 					'favorites' => get_option(
@@ -1424,7 +1496,6 @@ class Plugin {
 					'ai_assistant' => isset( $ai_features['ai_assistant']['status'] ) ? $ai_features['ai_assistant']['status'] : 'disabled',
 					'hide_notice' => $this->is_show_personalize_ai_notice(),
 					'is_sync_business_details' => get_option( 'ast-templates-business-details-synced', false ),
-					'bypassAuth' => apply_filters( 'ast_block_templates_bypass_auth', false ),
 					'zipwp_ai_auth_nonce' => wp_create_nonce( 'zip_ai_auth_nonce' ),
 					'gutenberg_plugin_status' => is_plugin_active( 'gutenberg/gutenberg.php' ),
 					'is_personalized' => get_option( 'ast-templates-ai-content', false ),
@@ -1776,8 +1847,17 @@ class Plugin {
 			return 'v3';
 		}
 
-		// If Starter Templates is active without Spectra, or both plugins are < 3.0.0-beta.1.
-		return 'v2';
+		// Legacy Spectra installed (UAGB or Spectra Pro < 3.0.0-beta.1) — only the
+		// v2 (uagb/) blocks are available, so the site's capability is v2.
+		if (
+			is_plugin_active( 'ultimate-addons-for-gutenberg/ultimate-addons-for-gutenberg.php' ) ||
+			is_plugin_active( 'spectra-pro/spectra-pro.php' )
+		) {
+			return 'v2';
+		}
+
+		// No Spectra plugin installed — default the library to v3 (Spectra Blocks).
+		return 'v3';
 	}
 
 	/**
@@ -1805,37 +1885,27 @@ class Plugin {
 	 * @return bool
 	 */
 	public function should_show_version_toggle() {
-		$spectra_blocks_active = is_plugin_active( 'spectra-blocks/spectra-blocks.php' );
-		$uagb_active           = is_plugin_active( 'ultimate-addons-for-gutenberg/ultimate-addons-for-gutenberg.php' );
-
-		// When spectra-blocks is active WITHOUT UAGB, always render v3 — no toggle needed.
-		if ( $spectra_blocks_active && ! $uagb_active ) {
+		// v2 blocks require UAGB to be active — stale database options left behind
+		// by a previous install (e.g. from ZipWP site creation) must not trigger
+		// the toggle when UAGB is no longer running.
+		if ( ! is_plugin_active( 'ultimate-addons-for-gutenberg/ultimate-addons-for-gutenberg.php' ) ) {
+			/**
+			 * Filter to modify the visibility of version toggle.
+			 *
+			 * @param bool $flag Whether to show the version toggle.
+			 *
+			 * @since 2.4.32
+			 */
 			return apply_filters( 'ast_block_templates_show_version_toggle', false );
 		}
 
-		// When spectra-blocks AND UAGB are both active:
-		// - Old UAGB (< 3.0.0-beta.1) always registers uagb/ v2 blocks — show toggle unconditionally.
-		// - New UAGB (>= 3.0.0-beta.1) only registers v2 blocks when a flag is enabled — check the flags.
-		if ( $spectra_blocks_active ) {
-			$uagb_version = $this->get_uagb_version();
-			if ( $uagb_version && version_compare( $uagb_version, '3.0.0-beta.1', '<' ) ) {
-				return apply_filters( 'ast_block_templates_show_version_toggle', true );
-			}
-			$register_v2   = get_option( 'register-v2-blocks', 'no' );
-			$old_user_flag = get_option( 'uagb-old-user-less-than-3', 'no' );
-			$is_v2_user    = ( 'yes' === $register_v2 || 'yes' === $old_user_flag );
-			return apply_filters( 'ast_block_templates_show_version_toggle', $is_v2_user );
-		}
-
-		// Original UAGB-only logic: show toggle only when BOTH conditions are met:
-		// 1. Spectra version >= 3.0.0-beta.1 (v3)
-		// 2. Legacy design library is explicitly enabled OR register-v2-blocks is enabled.
-		$enable_legacy_library = get_option( 'uag_enable_legacy_design_library', 'disabled' );
+		// UAGB is active — respect explicit opt-in flags for the legacy v2 library.
 		$register_v2_blocks    = get_option( 'register-v2-blocks', 'no' );
-		$spectra_version       = $this->get_spectra_version();
+		$enable_legacy_library = get_option( 'uag_enable_legacy_design_library', 'disabled' );
 
-		$should_show_toggle = ( 'enabled' === $enable_legacy_library || 'yes' === $register_v2_blocks );
-		$flag               = ( $should_show_toggle && 'v3' === $spectra_version );
+		if ( 'yes' === $register_v2_blocks || 'enabled' === $enable_legacy_library ) {
+			return apply_filters( 'ast_block_templates_show_version_toggle', true );
+		}
 
 		/**
 		 * Filter to modify the visibility of version toggle.
@@ -1844,35 +1914,24 @@ class Plugin {
 		 *
 		 * @since 2.4.15
 		 */
-		return apply_filters( 'ast_block_templates_show_version_toggle', $flag );
+		return apply_filters( 'ast_block_templates_show_version_toggle', true );
 	}
 
 	/**
 	 * Get the labels to use for the version toggle.
 	 *
-	 * When spectra-blocks and UAGB are both active the toggle switches between
-	 * the UAGB Classic pattern library and Spectra Blocks patterns, so the
-	 * labels are renamed accordingly.  In all other cases the original "v2"
-	 * and "v3" labels are used.
+	 * The toggle is only shown when Spectra Legacy (UAGB) is active, letting the
+	 * user switch between the legacy v2 pattern library and the default Spectra
+	 * Blocks (v3) patterns, so the labels are named accordingly.
 	 *
 	 * @since 2.4.18
 	 *
 	 * @return array{v2: string, v3: string}
 	 */
 	public function get_version_toggle_labels() {
-		$spectra_blocks_active = is_plugin_active( 'spectra-blocks/spectra-blocks.php' );
-		$uagb_active           = is_plugin_active( 'ultimate-addons-for-gutenberg/ultimate-addons-for-gutenberg.php' );
-
-		if ( $spectra_blocks_active && $uagb_active ) {
-			return array(
-				'v2' => __( 'Spectra Legacy', 'ast-block-templates' ),
-				'v3' => __( 'Spectra Blocks', 'ast-block-templates' ),
-			);
-		}
-
 		return array(
-			'v2' => __( 'v2', 'ast-block-templates' ),
-			'v3' => __( 'v3', 'ast-block-templates' ),
+			'v2' => __( 'Spectra Legacy', 'ast-block-templates' ),
+			'v3' => __( 'Spectra Blocks', 'ast-block-templates' ),
 		);
 	}
 

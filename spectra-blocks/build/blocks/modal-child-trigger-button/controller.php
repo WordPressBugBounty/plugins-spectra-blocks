@@ -14,6 +14,17 @@ use SpectraBlocks\Helpers\Core;
 $text = $attributes['text'] ?? '';
 $icon = $attributes['icon'] ?? null;
 
+// The label must never contain an anchor: view.php always wraps it in a
+// div with role="button" that toggles the modal, and a link inside it would
+// hijack the click. Strip <a> tags (keeping inner text and all other
+// formatting) via a kses allowlist, which also neutralizes malformed anchors
+// that a regex would miss. Editor-side counterpart: removeAnchorTag() in @spectra-helpers.
+if ( '' !== $text ) {
+	$allowed_label_tags = wp_kses_allowed_html( 'post' );
+	unset( $allowed_label_tags['a'] );
+	$text = wp_kses( $text, $allowed_label_tags );
+}
+
 // If the main attributes do not exist, abandon ship.
 if ( ! $text && ! isset( $icon ) ) {
 	return;

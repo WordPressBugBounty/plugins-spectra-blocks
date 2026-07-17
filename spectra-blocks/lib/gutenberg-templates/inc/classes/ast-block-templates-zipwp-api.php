@@ -214,9 +214,10 @@ class Ast_Block_Templates_Zipwp_Api {
 		if ( 200 === $response_code ) {
 			$response_data = json_decode( $response_body, true );
 			if ( $response_data ) {
+				$languages = isset( $response_data['data'] ) && is_array( $response_data['data'] ) ? $response_data['data'] : array();
 				return rest_ensure_response(
 					array(
-						'data'   => $response_data['data'],
+						'data'   => $languages,
 						'status' => true,
 					)
 				);

@@ -40,6 +40,8 @@ class Admin_Helper {
 	 */
 	public static function get_common_settings() {
 
+		$sb_versions = \Spectra_Blocks_Admin_Helper::get_rollback_versions_options();
+
 		$theme_data          = \WP_Theme_JSON_Resolver::get_theme_data();
 		$theme_settings      = $theme_data->get_settings();
 		$theme_font_families = isset( $theme_settings['typography']['fontFamilies']['theme'] ) && is_array( $theme_settings['typography']['fontFamilies']['theme'] ) ? $theme_settings['typography']['fontFamilies']['theme'] : array();
@@ -81,6 +83,8 @@ class Admin_Helper {
 			'enable_abilities'                   => \Spectra_Blocks_Admin_Helper::get_admin_settings_option( 'spectra_blocks_enable_abilities', 'disabled' ),
 			'enable_edit_abilities'              => \Spectra_Blocks_Admin_Helper::get_admin_settings_option( 'spectra_blocks_enable_edit_abilities', 'enabled' ),
 			'enable_mcp_server'                  => \Spectra_Blocks_Admin_Helper::get_admin_settings_option( 'spectra_blocks_enable_mcp_server', 'disabled' ),
+			'rollback_to_previous_version'       => isset( $sb_versions[0]['value'] ) ? $sb_versions[0]['value'] : '',
+			'spectra_blocks_previous_versions'   => $sb_versions,
 		);
 
 		return $options;
