@@ -4327,46 +4327,14 @@ class ClassRegistry {
 		);
 
 		// --- Columns ---
-		for ( $i = 1; $i <= 12; $i++ ) {
-			$classes[ "columns-{$i}" ] = array(
-				'css'         => "columns: {$i};",
-				'title'       => "Columns {$i}",
-				'description' => "Splits content into {$i} columns.",
-				'category'    => 'layout',
-				'tags'        => array( 'columns' ),
-			);
-		}
-		$classes['columns-auto'] = array(
-			'css'         => 'columns: auto;',
-			'title'       => 'Columns auto',
-			'description' => 'Uses automatic column count.',
-			'category'    => 'layout',
-			'tags'        => array( 'columns' ),
-		);
-		$columns_sizes           = array(
-			'3xs' => '16rem',
-			'2xs' => '18rem',
-			'xs'  => '20rem',
-			'sm'  => '24rem',
-			'md'  => '28rem',
-			'lg'  => '32rem',
-			'xl'  => '36rem',
-			'2xl' => '42rem',
-			'3xl' => '48rem',
-			'4xl' => '56rem',
-			'5xl' => '64rem',
-			'6xl' => '72rem',
-			'7xl' => '80rem',
-		);
-		foreach ( $columns_sizes as $key => $value ) {
-			$classes[ "columns-{$key}" ] = array(
-				'css'         => "columns: {$value};",
-				'title'       => "Columns {$key}",
-				'description' => "Uses {$value} as the ideal column width.",
-				'category'    => 'layout',
-				'tags'        => array( 'columns' ),
-			);
-		}
+		// Intentionally NOT registered as static utility classes. `columns-{n}`
+		// is too generic a class name — the static sheet ships site-wide in Free
+		// (no per-post filtering), so `:root .columns-4 { columns: 4 }` was being
+		// forced onto ANY element carrying a `columns-4` class (themes/other
+		// plugins use it for grid layouts), hijacking it into CSS multi-column.
+		// Arbitrary `columns-*` tokens authored on a Spectra block are still
+		// resolved on demand by the JIT compiler (PREFIX_MAP: `columns`).
+		// @since x.x.x
 
 		$break_values = array( 'auto', 'avoid', 'all', 'avoid-page', 'page', 'left', 'right', 'column' );
 		foreach ( $break_values as $value ) {

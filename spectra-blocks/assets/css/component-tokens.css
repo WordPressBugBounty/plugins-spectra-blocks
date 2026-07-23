@@ -509,18 +509,6 @@
 }
 
 /* ================================================================
-   ACCORDION ITEM BOX-SIZING
-   Item box-sizing defaults to content-box in
-   accordion-child-item/style.scss — override to border-box so padding
-   and borders don't push item width past the parent.
-   ================================================================ */
-
-.wp-block-spectra-accordion-child-item {
-	box-sizing: border-box;
-	width: 100%;
-}
-
-/* ================================================================
    SG-ACCORDION — header layout override
 
    Scoped behind `.sg-accordion` so standalone Spectra accordions keep

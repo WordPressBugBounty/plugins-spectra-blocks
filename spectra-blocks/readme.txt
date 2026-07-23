@@ -4,7 +4,7 @@ Tags: ai website builder, gutenberg blocks, page builder, block editor, website 
 Requires at least: 6.6
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -343,6 +343,11 @@ The admin dashboard "What's New" panel fetches an RSS feed from wpspectra.com to
 * [Privacy Policy](https://wpspectra.com/privacy-policy/)
 
 == Changelog ==
+
+= 1.0.2 - Thursday, 23rd July 2026 =
+* New: Site Visibility — add a Coming Soon or Maintenance Mode page from Settings → Preferences.
+* Fix: Core List block bullets and numbering were missing when the block was placed inside a Spectra Container on free installs.
+* Fix: Generic `columns-*` CSS utility classes were unintentionally overriding layout on themes and plugins that use the same class names.
 
 = 1.0.1 - Friday, 17th July 2026 =
 * New: Version rollback support — roll back to a previous version from the admin dashboard (Settings → Utilities → Version Control).

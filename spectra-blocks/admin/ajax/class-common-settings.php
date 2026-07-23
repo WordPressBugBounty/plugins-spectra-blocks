@@ -83,6 +83,9 @@ class Common_Settings extends Ajax_Base {
 			'enable_abilities',
 			'enable_edit_abilities',
 			'enable_mcp_server',
+			'visibility_mode',
+			'visibility_page',
+			'fetch_pages',
 		);
 
 		$this->init_ajax_events( $ajax_events );
@@ -918,5 +921,64 @@ class Common_Settings extends Ajax_Base {
 		$this->check_permission_nonce( 'spectra_blocks_enable_mcp_server' );
 		$value = $this->check_post_value();
 		$this->save_admin_settings( 'spectra_blocks_enable_mcp_server', sanitize_text_field( $value ) );
+	}
+
+	/**
+	 * Save visibility mode (disabled | comingsoon | maintenance).
+	 *
+	 * @since x.x.x
+	 * @return void
+	 */
+	public function visibility_mode() {
+		$this->check_permission_nonce( 'spectra_blocks_visibility_mode' );
+		$value         = $this->check_post_value();
+		$allowed_modes = array( 'disabled', 'comingsoon', 'maintenance' );
+		$mode          = in_array( $value, $allowed_modes, true ) ? $value : 'disabled';
+		$this->save_admin_settings( 'spectra_blocks_visibility_mode', $mode );
+	}
+
+	/**
+	 * Save the selected visibility page ID.
+	 *
+	 * @since x.x.x
+	 * @return void
+	 */
+	public function visibility_page() {
+		$this->check_permission_nonce( 'spectra_blocks_visibility_page' );
+		$value   = $this->check_post_value();
+		$page_id = absint( $value );
+		$this->save_admin_settings( 'spectra_blocks_visibility_page', $page_id );
+	}
+
+	/**
+	 * Fetch published pages for the visibility page dropdown.
+	 *
+	 * @since x.x.x
+	 * @return void
+	 */
+	public function fetch_pages() {
+		$this->check_permission_nonce( 'spectra_blocks_fetch_pages' );
+
+		// Nonce verified above; keyword is used only for a WP_Query title search.
+		$keyword = isset( $_POST['keyword'] ) ? sanitize_text_field( wp_unslash( $_POST['keyword'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce verified via check_permission_nonce above.
+
+		$query = new \WP_Query(
+			array(
+				'post_type'      => 'page',
+				'post_status'    => 'publish',
+				'posts_per_page' => 10,
+				's'              => $keyword,
+			)
+		);
+
+		$pages = array();
+		foreach ( $query->posts as $page ) {
+			$pages[] = array(
+				'value' => $page->ID,
+				'label' => $page->post_title,
+			);
+		}
+
+		wp_send_json_success( $pages );
 	}
 }

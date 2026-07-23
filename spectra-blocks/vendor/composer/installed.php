@@ -3,7 +3,7 @@
         'name' => 'brainstormforce/spectra-blocks',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => '8fe399f06ac4b8aa214593d40693485f17e51b30',
+        'reference' => '9a4beabfdfcf910aebc747e2f569b2d6e86176d8',
         'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -66,7 +66,7 @@
         'brainstormforce/spectra-blocks' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => '8fe399f06ac4b8aa214593d40693485f17e51b30',
+            'reference' => '9a4beabfdfcf910aebc747e2f569b2d6e86176d8',
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

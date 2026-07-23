@@ -795,7 +795,15 @@ class Engine {
 		$rules[] = $resetScope . ' blockquote,' . $resetScope . ' dl,' . $resetScope . ' dd,' . $resetScope . ' h1,' . $resetScope . ' h2,' . $resetScope . ' h3,' . $resetScope . ' h4,' . $resetScope . ' h5,' . $resetScope . ' h6,' . $resetScope . ' hr,' . $resetScope . ' figure,' . $resetScope . ' p,' . $resetScope . ' pre,' . $resetScope . ' span{margin:0;}';
 
 		// Lists.
-		$rules[] = $scope . ' ol,' . $scope . ' ul,' . $scope . ' menu{list-style:none;margin:0;padding:0;}';
+		//
+		// Exclude core's List block (`.wp-block-list`) from the marker/indent
+		// strip. This reset is meant for bare layout lists (nav markup, Spectra
+		// list blocks that manage their own markers via scoped CSS); applying it
+		// to a core List block nested in a Spectra Container silently removes its
+		// bullets/numbers on the front end, since `:where()` contributes zero
+		// specificity yet `(0,0,1)` still beats the UA default. Core lists fall
+		// back to browser/theme defaults instead. See #508.
+		$rules[] = $scope . ' ol:not(.wp-block-list),' . $scope . ' ul:not(.wp-block-list),' . $scope . ' menu{list-style:none;margin:0;padding:0;}';
 		$rules[] = $scope . ' fieldset{margin:0;padding:0;}';
 		$rules[] = $scope . ' legend{padding:0;}';
 
