@@ -47,7 +47,12 @@ $custom_styles = $is_hidden ? array( 'display' => 'none' ) : array();
 $wrapper_attributes = BlockAttributes::get_wrapper_attributes( $attributes, $config, array( 'id' => $anchor ), $custom_classes, $custom_styles );
 
 // Add the text if it exists, else make the placeholder as the text.
-$text = ! empty( $attributes['text'] ) ? $attributes['text'] : __( 'Get started by writing something!', 'spectra-blocks' );
+// Strict compare: `empty('0')` is true, so "0" was replaced by the placeholder.
+$text = $attributes['text'] ?? '';
+// `"0"` is falsy in PHP and `false` is not a string; normalise once so every
+// test below compares against a known string.
+$text = is_scalar( $text ) ? (string) $text : '';
+$text = '' !== $text ? $text : __( 'Get started by writing something!', 'spectra-blocks' );
 
 // The label must never contain an anchor: view.php always wraps it in an
 // element with role="button" that toggles the modal, and a link inside it

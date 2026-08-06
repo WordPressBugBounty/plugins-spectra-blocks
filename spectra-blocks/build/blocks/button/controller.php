@@ -12,6 +12,10 @@ use SpectraBlocks\Helpers\Core;
 
 // The main attributes that need to exist.
 $text = $attributes['text'] ?? '';
+// `"0"` is falsy and `false` is not a string; normalise once so the strict
+// compare below is always against a known string.
+$text = is_scalar( $text ) ? (string) $text : '';
+
 $icon = $attributes['icon'] ?? '';
 
 // The label must never contain an anchor: view.php always wraps it in an <a>,
@@ -25,8 +29,11 @@ if ( '' !== $text ) {
 	$text = wp_kses( $text, $allowed_label_tags );
 }
 
-// Bail out if both text and icon are empty.
-if ( empty( $text ) && empty( $icon ) ) {
+// Bail out if both text and icon are empty. Strict compare on TEXT: empty('0')
+// is true in PHP, so a button labelled "0" with no icon rendered nothing at
+// all. `empty()` on the ICON is deliberate — an icon is a slug or array, and
+// "0" is not a meaningful icon value.
+if ( '' === $text && empty( $icon ) ) {
 	return;
 }
 
@@ -240,7 +247,7 @@ if ( $has_link ) {
 	$aria = $text;
 
 	// Strip HTML tags from aria-label for better accessibility.
-	if ( ! empty( $aria ) ) {
+	if ( '' !== $aria ) {
 		$aria = wp_strip_all_tags( $aria );
 	}
 

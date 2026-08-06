@@ -249,17 +249,17 @@
         },
         {
             "name": "brainstormforce/one-onboarding",
-            "version": "v1.0.4",
-            "version_normalized": "1.0.4.0",
+            "version": "v1.0.5",
+            "version_normalized": "1.0.5.0",
             "source": {
                 "type": "git",
                 "url": "git@github.com:brainstormforce/one-onboarding.git",
-                "reference": "00774a4ca226216a0306963986d9dc3910ecab02"
+                "reference": "6cbb6a4f581ba23397c43bd9b46c9079cc5289a0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/brainstormforce/one-onboarding/zipball/00774a4ca226216a0306963986d9dc3910ecab02",
-                "reference": "00774a4ca226216a0306963986d9dc3910ecab02",
+                "url": "https://api.github.com/repos/brainstormforce/one-onboarding/zipball/6cbb6a4f581ba23397c43bd9b46c9079cc5289a0",
+                "reference": "6cbb6a4f581ba23397c43bd9b46c9079cc5289a0",
                 "shasum": ""
             },
             "require": {
@@ -278,7 +278,7 @@
                 "szepeviktor/phpstan-wordpress": "^1.1",
                 "wp-coding-standards/wpcs": "^2.2"
             },
-            "time": "2026-07-16T13:12:28+00:00",
+            "time": "2026-08-06T11:49:58+00:00",
             "type": "wordpress-plugin",
             "installation-source": "dist",
             "autoload": {
@@ -323,7 +323,7 @@
             ],
             "description": "One Onboarding is a comprehensive library designed to create seamless onboarding experiences for Brainstorm Force (BSF) products including Astra theme, Spectra plugin, and other WordPress products.",
             "support": {
-                "source": "https://github.com/brainstormforce/one-onboarding/tree/v1.0.4",
+                "source": "https://github.com/brainstormforce/one-onboarding/tree/v1.0.5",
                 "issues": "https://github.com/brainstormforce/one-onboarding/issues"
             },
             "install-path": "../../lib/one-onboarding"

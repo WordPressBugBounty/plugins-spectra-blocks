@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit95dcbb8a98091047a451dd3cad8ae8f9
+class ComposerStaticInit5b4d0212305c95e6d8dece4f7bc3fb46
 {
     public static $prefixLengthsPsr4 = array (
         'e' =>
@@ -130,13 +130,20 @@ class ComposerStaticInit95dcbb8a98091047a451dd3cad8ae8f9
         'SpectraBlocks\\PatternCSSService' => __DIR__ . '/../..' . '/includes/class-pattern-css-refactored.php',
         'SpectraBlocks\\Queries\\PostQuery' => __DIR__ . '/../..' . '/includes/Queries/class-post-query.php',
         'SpectraBlocks\\SpectraBlockCSSGenerator' => __DIR__ . '/../..' . '/includes/class-pattern-css-refactored.php',
-        'SpectraBlocks\\StyleGuide\\ContrastEngine' => __DIR__ . '/../..' . '/includes/StyleGuide/class-contrast-engine.php',
+        'SpectraBlocks\\StyleGuide\\ColorMath' => __DIR__ . '/../..' . '/includes/StyleGuide/class-color-math.php',
+        'SpectraBlocks\\StyleGuide\\ColorModel' => __DIR__ . '/../..' . '/includes/StyleGuide/class-color-model.php',
         'SpectraBlocks\\StyleGuide\\Engine' => __DIR__ . '/../..' . '/includes/StyleGuide/class-engine.php',
         'SpectraBlocks\\StyleGuide\\GlobalStylesBridge' => __DIR__ . '/../..' . '/includes/StyleGuide/class-global-styles-bridge.php',
         'SpectraBlocks\\StyleGuide\\GlobalStylesCompat' => __DIR__ . '/../..' . '/includes/StyleGuide/class-global-styles-compat.php',
-        'SpectraBlocks\\StyleGuide\\SchemeComputer' => __DIR__ . '/../..' . '/includes/StyleGuide/class-scheme-computer.php',
-        'SpectraBlocks\\StyleGuide\\ShadeGenerator' => __DIR__ . '/../..' . '/includes/StyleGuide/class-shade-generator.php',
-        'SpectraBlocks\\StyleGuide\\SpectraOneCompat' => __DIR__ . '/../..' . '/includes/StyleGuide/class-spectra-one-compat.php',
+        'SpectraBlocks\\StyleGuide\\Sync\\Astra\\AstraPaletteAdapter' => __DIR__ . '/../..' . '/includes/StyleGuide/Sync/Astra/class-astra-palette-adapter.php',
+        'SpectraBlocks\\StyleGuide\\Sync\\ColorRoles' => __DIR__ . '/../..' . '/includes/StyleGuide/Sync/class-color-roles.php',
+        'SpectraBlocks\\StyleGuide\\Sync\\ColorSyncAdapter' => __DIR__ . '/../..' . '/includes/StyleGuide/Sync/class-color-sync-adapter.php',
+        'SpectraBlocks\\StyleGuide\\Sync\\FseGlobalStylesAdapter' => __DIR__ . '/../..' . '/includes/StyleGuide/Sync/class-fse-global-styles-adapter.php',
+        'SpectraBlocks\\StyleGuide\\Sync\\MappingResolver' => __DIR__ . '/../..' . '/includes/StyleGuide/Sync/class-mapping-resolver.php',
+        'SpectraBlocks\\StyleGuide\\Sync\\PaletteCleanup' => __DIR__ . '/../..' . '/includes/StyleGuide/Sync/class-palette-cleanup.php',
+        'SpectraBlocks\\StyleGuide\\Sync\\SpectraOne\\SpectraOneCompat' => __DIR__ . '/../..' . '/includes/StyleGuide/Sync/SpectraOne/class-spectra-one-compat.php',
+        'SpectraBlocks\\StyleGuide\\Sync\\SyncOrchestrator' => __DIR__ . '/../..' . '/includes/StyleGuide/Sync/class-sync-orchestrator.php',
+        'SpectraBlocks\\StyleGuide\\Sync\\ThemeColorMapping' => __DIR__ . '/../..' . '/includes/StyleGuide/Sync/class-theme-color-mapping.php',
         'SpectraBlocks\\StyleGuide\\ThemeStyleCompat' => __DIR__ . '/../..' . '/includes/StyleGuide/class-theme-style-compat.php',
         'SpectraBlocks\\StyleGuide\\TokenRegistry' => __DIR__ . '/../..' . '/includes/StyleGuide/class-token-registry.php',
         'SpectraBlocks\\Traits\\Singleton' => __DIR__ . '/../..' . '/includes/Traits/class-singleton.php',
@@ -150,9 +157,9 @@ class ComposerStaticInit95dcbb8a98091047a451dd3cad8ae8f9
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit95dcbb8a98091047a451dd3cad8ae8f9::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit95dcbb8a98091047a451dd3cad8ae8f9::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInit95dcbb8a98091047a451dd3cad8ae8f9::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit5b4d0212305c95e6d8dece4f7bc3fb46::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit5b4d0212305c95e6d8dece4f7bc3fb46::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit5b4d0212305c95e6d8dece4f7bc3fb46::$classMap;
 
         }, null, ClassLoader::class);
     }

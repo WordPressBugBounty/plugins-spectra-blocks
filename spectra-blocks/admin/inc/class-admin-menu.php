@@ -303,7 +303,7 @@ class Admin_Menu {
 
 		// Check if Spectra Pro plugin is not active.
 		if ( ! is_plugin_active( 'spectra-blocks-pro/spectra-blocks-pro.php' ) && ! file_exists( SPECTRA_BLOCKS_DIR . '../spectra-blocks-pro/spectra-blocks-pro.php' ) ) {
-			$free_links[] = '<a href="' . esc_url( $spectra_pro ) . '" target="_blank" rel="noreferrer" class="spectra-plugins-go-pro">' . __( 'Get Spectra Pro', 'spectra-blocks' ) . '</a>';
+			$free_links[] = '<a href="' . esc_url( $spectra_pro ) . '" target="_blank" rel="noreferrer" class="spectra-plugins-go-pro">' . __( 'Upgrade to Pro', 'spectra-blocks' ) . '</a>';
 		}
 
 		// Merge with $links array if it exists (assuming $links is defined elsewhere).
@@ -354,7 +354,7 @@ class Admin_Menu {
 		// Add the Dashboard Submenu.
 		add_submenu_page(
 			$menu_slug,
-			__( 'Spectra', 'spectra-blocks' ),
+			__( 'Spectra Blocks', 'spectra-blocks' ),
 			__( 'Dashboard', 'spectra-blocks' ),
 			$capability,
 			$menu_slug,
@@ -363,7 +363,7 @@ class Admin_Menu {
 
 		add_submenu_page(
 			$menu_slug,
-			__( 'Spectra', 'spectra-blocks' ),
+			__( 'Spectra Blocks', 'spectra-blocks' ),
 			__( 'AI Features', 'spectra-blocks' ),
 			$capability,
 			$menu_slug . '&path=ai-features',
@@ -386,7 +386,7 @@ class Admin_Menu {
 		// Add the Learn tab in Submenu.
 		add_submenu_page(
 			$menu_slug,
-			__( 'Spectra', 'spectra-blocks' ),
+			__( 'Spectra Blocks', 'spectra-blocks' ),
 			__( 'Learn', 'spectra-blocks' ),
 			$capability,
 			$menu_slug . '&path=learn',
@@ -396,7 +396,7 @@ class Admin_Menu {
 		// Finally, add the Settings Submenu.
 		add_submenu_page(
 			$menu_slug,
-			__( 'Spectra', 'spectra-blocks' ),
+			__( 'Spectra Blocks', 'spectra-blocks' ),
 			__( 'Settings', 'spectra-blocks' ),
 			$capability,
 			$menu_slug . '&path=settings',
@@ -408,7 +408,7 @@ class Admin_Menu {
 			add_submenu_page(
 				$menu_slug,
 				__( 'Free vs Pro', 'spectra-blocks' ),
-				__( 'Get Spectra Pro', 'spectra-blocks' ),
+				__( 'Free vs Pro', 'spectra-blocks' ),
 				$capability,
 				$menu_slug . '&path=free-vs-pro',
 				array( $this, 'render' )

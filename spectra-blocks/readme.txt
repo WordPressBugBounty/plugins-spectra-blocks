@@ -4,7 +4,7 @@ Tags: ai website builder, gutenberg blocks, page builder, block editor, website 
 Requires at least: 6.6
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -342,6 +342,13 @@ Service URL: https://wpspectra.com/whats-new/feed/
 [Terms of Service](https://www.brainstormforce.com/terms-and-conditions/) | [Privacy Policy](https://wpspectra.com/privacy-policy/)
 
 == Changelog ==
+
+= 1.0.3 - Thursday, 6th August 2026 =
+* New: Style Guide colours now stay in sync with your WordPress theme colours automatically.
+* Fix: Global Styles no longer affect elements outside your content area (such as the post title in the editor).
+* Fix: Popup content now scrolls correctly when taller than the screen; close button stays visible.
+* Fix: Modal content scrolls correctly when it exceeds the viewport height.
+* Fix: Image Mask extension now loads correctly in all configurations.
 
 = 1.0.2 - Thursday, 23rd July 2026 =
 * New: Site Visibility — add a Coming Soon or Maintenance Mode page from Settings → Preferences.

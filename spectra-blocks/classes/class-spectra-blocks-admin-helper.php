@@ -128,17 +128,13 @@ if ( ! class_exists( 'Spectra_Blocks_Admin_Helper' ) ) {
 			}
 
 			return array(
-				'spectra_blocks_enable_templates_button'   => self::get_admin_settings_option( 'spectra_blocks_enable_templates_button', 'yes' ),
+				'spectra_blocks_enable_templates_button' => self::get_admin_settings_option( 'spectra_blocks_enable_templates_button', 'yes' ),
 				'spectra_blocks_enable_animations_extension' => self::get_admin_settings_option( 'spectra_blocks_enable_animations_extension', 'enabled' ),
-				'spectra_blocks_enable_gbs_extension'      => self::get_admin_settings_option( 'spectra_blocks_enable_gbs_extension', 'enabled' ),
-				'spectra_blocks_enable_block_responsive'   => self::get_admin_settings_option( 'spectra_blocks_enable_block_responsive', 'enabled' ),
-				'spectra_blocks_select_font_globally'      => self::get_admin_settings_option( 'spectra_blocks_select_font_globally', array() ),
-				'spectra_blocks_load_select_font_globally' => self::get_admin_settings_option( 'spectra_blocks_load_select_font_globally', 'disabled' ),
-				'spectra_blocks_load_gfonts_locally'       => self::get_admin_settings_option( 'spectra_blocks_load_gfonts_locally', 'disabled' ),
-				'spectra_blocks_preload_local_fonts'       => self::get_admin_settings_option( 'spectra_blocks_preload_local_fonts', 'disabled' ),
-				'spectra_blocks_analytics_optin'           => self::get_admin_settings_option( 'spectra_blocks_analytics_optin', 'no' ),
-				'wp_is_block_theme'                        => self::is_block_theme(),
-				'zip_ai_modules'                           => $zip_ai_modules,
+				'spectra_blocks_enable_gbs_extension'    => self::get_admin_settings_option( 'spectra_blocks_enable_gbs_extension', 'enabled' ),
+				'spectra_blocks_enable_block_responsive' => self::get_admin_settings_option( 'spectra_blocks_enable_block_responsive', 'enabled' ),
+				'spectra_blocks_analytics_optin'         => self::get_admin_settings_option( 'spectra_blocks_analytics_optin', 'no' ),
+				'wp_is_block_theme'                      => self::is_block_theme(),
+				'zip_ai_modules'                         => $zip_ai_modules,
 			);
 		}
 

@@ -17,14 +17,14 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Defers to UAGB when UAGB is active and has its own visibility enabled,
  * so the two plugins never double-redirect on the same site.
  *
- * @since x.x.x
+ * @since 1.0.3
  */
 class Spectra_Blocks_Visibility {
 
 	/**
 	 * Instance.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.3
 	 * @var self|null
 	 */
 	private static $instance = null;
@@ -32,7 +32,7 @@ class Spectra_Blocks_Visibility {
 	/**
 	 * Get singleton instance.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.3
 	 * @return self
 	 */
 	public static function get_instance() {
@@ -45,7 +45,7 @@ class Spectra_Blocks_Visibility {
 	/**
 	 * Constructor.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.3
 	 */
 	private function __construct() {
 		$mode    = Spectra_Blocks_Admin_Helper::get_admin_settings_option( 'spectra_blocks_visibility_mode', 'disabled' );
@@ -72,7 +72,7 @@ class Spectra_Blocks_Visibility {
 	 * Redirect non-logged-in visitors to the visibility page.
 	 * Sets 503 header for maintenance mode.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.3
 	 * @return void
 	 */
 	public function handle_redirect() {
@@ -105,7 +105,7 @@ class Spectra_Blocks_Visibility {
 	 * Replace the active theme template with a minimal visibility template
 	 * so the page renders without the site header/footer.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.3
 	 * @param string $template Current template path.
 	 * @return string
 	 */
@@ -129,7 +129,7 @@ class Spectra_Blocks_Visibility {
 	/**
 	 * Enqueue minimal CSS that hides theme header/footer on the visibility page.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.3
 	 * @return void
 	 */
 	public function enqueue_styles() {

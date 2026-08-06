@@ -12,8 +12,16 @@ use SpectraBlocks\Helpers\Core;
 
 // Ensure attributes exist.
 $current_tab = $attributes['currentTab'] ?? 0;
-$text        = ! empty( $attributes['text'] ) ? $attributes['text'] : ( $attributes['placeholder'] ?? __( 'Tab', 'spectra-blocks' ) );
 $show_text   = $attributes['showText'] ?? true;
+
+// Strict compare: empty('0') is true in PHP, so a tab labelled "0" was replaced
+// by the placeholder. Only a truly empty string falls back.
+$text = $attributes['text'] ?? '';
+// `"0"` is falsy and a boolean `false` is not a string — normalise BEFORE the
+// strict compare, or `false` passes it and `wp_kses( false )` renders empty
+// instead of falling back to the placeholder.
+$text = is_scalar( $text ) ? (string) $text : '';
+$text = '' !== $text ? $text : ( $attributes['placeholder'] ?? __( 'Tab', 'spectra-blocks' ) );
 
 // The label must never contain an anchor: view.php always wraps it in a <button>,
 // and an anchor nested inside a button is invalid, conflicting interactive HTML.
@@ -28,7 +36,10 @@ if ( '' !== $text ) {
 $icon          = $attributes['icon'] ?? $block->context['spectra/tabs/icon'] ?? '';
 $icon_position = $attributes['iconPosition'] ?? $block->context['spectra/tabs/iconPosition'] ?? 'after';
 $flip_for_rtl  = $attributes['flipForRTL'] ?? false;
-$aria_label    = ( ! $show_text && ! empty( $text ) ) ? $text : ''; // Aria label is only required when the text is not shown.
+// Strict compare: an icon-only tab labelled "0" shipped with NO accessible
+// name, because `empty('0')` is true. The label itself is fixed above; this is
+// the same bug 17 lines down.
+$aria_label = ( ! $show_text && '' !== $text ) ? $text : ''; // Aria label is only required when the text is not shown.
 
 // Define text and background colors.
 $style_context                    = $block->context['spectra/tabs/styleColorText'] ?? array();
