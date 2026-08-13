@@ -12,7 +12,7 @@
  * index-keyed `chromatics`/`neutral`-tint model (now the slug-keyed `colors`).
  *
  * @package Spectra\StyleGuide
- * @since   x.x.x
+ * @since   1.0.4
  */
 
 namespace SpectraBlocks\StyleGuide;
@@ -24,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Class ColorModel
  *
- * @since x.x.x
+ * @since 1.0.4
  */
 class ColorModel {
 
@@ -34,7 +34,7 @@ class ColorModel {
 	 *   - brand   → seeds chromatic ramp N; the role resolves to `chromaticN-7`.
 	 *   - neutral → is an anchor at ramp `stop`; the role resolves to `neutral-{stop}`.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 * @var array<string, array{kind: string, token: string, chromatic?: int, stop?: int}>
 	 */
 	const CORE_ROLES = array(
@@ -89,7 +89,7 @@ class ColorModel {
 	 * Status colours — fixed, brand-agnostic defaults. Generated (chromatics 4-7),
 	 * not stored. No forward UI writes these today (see audit §3.4).
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 * @var array<string, array{hex: string, chromatic: int, token: string}>
 	 */
 	const STATUS_COLORS = array(
@@ -125,7 +125,7 @@ class ColorModel {
 	 * Replaces the legacy `chromaticN-7` keys: brand 1-3 = primary/secondary/accent,
 	 * status 4-7 = success/error/info/warning.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 * @var array<int, string>
 	 */
 	const CHROMATIC_SLUG = array(
@@ -141,7 +141,7 @@ class ColorModel {
 	/**
 	 * The semantic token slug for a chromatic index (1-7), or '' when out of range.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 *
 	 * @param int $index Chromatic index.
 	 * @return string Token slug (e.g. `primary`, `success`).
@@ -155,7 +155,7 @@ class ColorModel {
 	 * NOT hardcoded — `Engine::get_default_config()` derives them once from these so
 	 * a fresh site matches the legacy tinted-neutral ramp exactly.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 * @var array<string, string>
 	 */
 	const DEFAULT_BRAND = array(
@@ -172,7 +172,7 @@ class ColorModel {
 	 * Covers: the 9 core roles, the extended roles (tertiary/quaternary/foreground),
 	 * the status roles, and the `sg-*` Astra-compat family.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 * @var array<string, string>
 	 */
 	const SEMANTIC_MAP = array(
@@ -206,7 +206,7 @@ class ColorModel {
 	/**
 	 * The nine core role slugs, in display order.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 *
 	 * @return string[] Slugs.
 	 */
@@ -217,7 +217,7 @@ class ColorModel {
 	/**
 	 * Is this slug one of the nine core roles?
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 *
 	 * @param string $slug Slug.
 	 * @return bool True when core.
@@ -229,7 +229,7 @@ class ColorModel {
 	/**
 	 * Brand role slug → chromatic index (1-3).
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 *
 	 * @return array<string, int> Map.
 	 */
@@ -246,7 +246,7 @@ class ColorModel {
 	/**
 	 * Neutral ramp stop (0-7) → role slug, for the six neutral anchors.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 *
 	 * @return array<int, string> Map (keys 0,1,2,4,5,7).
 	 */
@@ -263,7 +263,7 @@ class ColorModel {
 	/**
 	 * The semantic slug → token map (replaces the stored `semantic_map`).
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 *
 	 * @return array<string, string> Map.
 	 */
@@ -276,7 +276,7 @@ class ColorModel {
 	 * maps to it. Used by the reverse sync to turn a theme-side token edit back
 	 * into a `colors[slug]` write.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 *
 	 * @param string $token Shade token, e.g. `neutral-5` or `chromatic1-7`.
 	 * @return string|null Core role slug, or null.
@@ -300,7 +300,7 @@ class ColorModel {
 	 * in {@see self::STATUS_COLORS}. Anything needing a default colour must read
 	 * it from this class.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 *
 	 * @return array<string, string> slug => hex for all nine core roles.
 	 */

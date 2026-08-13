@@ -15,7 +15,7 @@
  * Customizer swatches stale — see {@see AstraPaletteAdapter::mirror_to_color_palettes()}.
  *
  * @package Spectra\StyleGuide
- * @since   x.x.x
+ * @since   1.0.4
  */
 
 namespace SpectraBlocks\StyleGuide\Sync\Astra;
@@ -31,14 +31,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Class AstraPaletteAdapter
  *
- * @since x.x.x
+ * @since 1.0.4
  */
 class AstraPaletteAdapter implements ColorSyncAdapter {
 
 	/**
 	 * Slug prefix mapping to Astra's `--ast-global-color-{N}` slots.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 * @var string
 	 */
 	const SLUG_PREFIX = 'ast-global-color-';
@@ -58,7 +58,7 @@ class AstraPaletteAdapter implements ColorSyncAdapter {
 	 * Astra keeps whatever value it has. Which stored colour (if any) should own
 	 * them is an open product decision.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 * @var array<string, string>
 	 */
 	const SEMANTIC_TOKENS = array(
@@ -75,7 +75,7 @@ class AstraPaletteAdapter implements ColorSyncAdapter {
 	 * Guard: true while this adapter is writing the Astra option, so the
 	 * `update_option_astra-settings` it fires can't re-trigger a pull.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 * @var bool
 	 */
 	private static $writing = false;
@@ -83,7 +83,7 @@ class AstraPaletteAdapter implements ColorSyncAdapter {
 	/**
 	 * Whether a programmatic Astra write is in progress.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 *
 	 * @return bool
 	 */
@@ -96,7 +96,7 @@ class AstraPaletteAdapter implements ColorSyncAdapter {
 	 * each adapter that provides it, so the `astra-settings` option name lives here in
 	 * the Astra module rather than being hardcoded in core.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 *
 	 * @param SyncOrchestrator $orchestrator The sync orchestrator.
 	 * @return void
@@ -108,7 +108,7 @@ class AstraPaletteAdapter implements ColorSyncAdapter {
 	/**
 	 * The Astra slot index for a slug, or null if the slug is not an Astra slug.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 *
 	 * @param string $slug e.g. `ast-global-color-3`.
 	 * @return int|null
@@ -124,7 +124,7 @@ class AstraPaletteAdapter implements ColorSyncAdapter {
 	/**
 	 * Whether Astra is active (its option API is available).
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 *
 	 * @return bool
 	 */
@@ -135,7 +135,7 @@ class AstraPaletteAdapter implements ColorSyncAdapter {
 	/**
 	 * Human-readable label.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 *
 	 * @return string
 	 */
@@ -146,7 +146,7 @@ class AstraPaletteAdapter implements ColorSyncAdapter {
 	/**
 	 * Read the ACTIVE Astra palette as `ast-global-color-{N}` => hex.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 *
 	 * @return array<string, string>
 	 */
@@ -160,7 +160,7 @@ class AstraPaletteAdapter implements ColorSyncAdapter {
 	/**
 	 * The ACTIVE palette slots from a given `global-color-palette` value.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 *
 	 * @param mixed $palette The `global-color-palette` option value.
 	 * @return array<int, string> index => color.
@@ -195,7 +195,7 @@ class AstraPaletteAdapter implements ColorSyncAdapter {
 	 * Read `ast-global-color-{N}` => hex from a full `astra-settings` array
 	 * (as handed to the `update_option_astra-settings` hook).
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 *
 	 * @param mixed $astra_settings The astra-settings option value.
 	 * @return array<string, string>
@@ -208,7 +208,7 @@ class AstraPaletteAdapter implements ColorSyncAdapter {
 	/**
 	 * Convert index => color to `ast-global-color-{N}` => color.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 *
 	 * @param array<int, string> $slots index => color.
 	 * @return array<string, string>
@@ -225,7 +225,7 @@ class AstraPaletteAdapter implements ColorSyncAdapter {
 	 * Patch `ast-global-color-{N}` slugs into the ACTIVE Astra palette, preserving
 	 * unmapped slots, then regenerate Astra's cached CSS.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 *
 	 * @param array<string, string> $patch slug => hex.
 	 * @return bool
@@ -291,7 +291,7 @@ class AstraPaletteAdapter implements ColorSyncAdapter {
 	/**
 	 * Whether two index => color slot maps differ (case-insensitive on hex).
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 *
 	 * @param array<int, string> $a First slot map.
 	 * @param array<int, string> $b Second slot map.
@@ -315,7 +315,7 @@ class AstraPaletteAdapter implements ColorSyncAdapter {
 	 * {@see astra_get_palette_colors()}) displays from. Kept index-for-index with
 	 * `global-color-palette['palette']`, matching Astra's own updater.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 *
 	 * @param array<int, string> $slots           index => color for the active palette.
 	 * @param string             $current_palette Active palette id (e.g. `palette_1`).
@@ -361,7 +361,7 @@ class AstraPaletteAdapter implements ColorSyncAdapter {
 	 * version. The brand/text/supporting slots are fixed; the four background
 	 * slots are swapped by the `astra_4_8_9_compatibility()` reorganize flag.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 *
 	 * @param string $semantic Semantic key from SEMANTIC_TOKENS.
 	 * @return int|null Slot index, or null if unknown.
@@ -400,7 +400,7 @@ class AstraPaletteAdapter implements ColorSyncAdapter {
 	 * Build the full Astra push patch (`ast-global-color-{N}` => hex) from the
 	 * Style Guide tokens, using the semantic → token map with flag-aware indices.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 *
 	 * @param TokenRegistry $tokens The computed Style Guide token registry.
 	 * @return array<string, string> slug => hex.
@@ -431,7 +431,7 @@ class AstraPaletteAdapter implements ColorSyncAdapter {
 	 * drift. Consumed by the reverse sync to turn a changed Astra slot back into the
 	 * Style Guide token it should update. Flag-aware (background indices).
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 *
 	 * @return array<int, string> slot index => SG token key (e.g. 3 => 'neutral-5').
 	 */

@@ -481,7 +481,7 @@ class GlobalStylesBridge {
 	 * ever called from that method, i.e. after the Pro + saved-guide gate — Style
 	 * Guide colours are therefore never injected while Pro is inactive.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 *
 	 * @return array<int, array<string, string>> Palette entries (empty when none).
 	 */
@@ -538,7 +538,7 @@ class GlobalStylesBridge {
 	 *
 	 * Style Guide colours are added ONLY when Pro is active (the guard below).
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 *
 	 * @param array<int, array<string, string>> $palette User-layer `theme` palette entries.
 	 * @return array<int, array<string, string>>|null Updated palette, or null when
@@ -658,7 +658,7 @@ class GlobalStylesBridge {
 	 * Themes with no readable theme.json palette (e.g. Astra) yield an empty order
 	 * and the palette is returned unchanged.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 *
 	 * @param array<int, array<string, string>> $palette Palette entries.
 	 * @return array<int, array<string, string>> Reordered palette.
@@ -702,7 +702,7 @@ class GlobalStylesBridge {
 	 * appended) rather than the resolver, so the Style Guide's own runtime palette
 	 * filters can't perturb the order. Statically cached per request.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 *
 	 * @return array<int, string> Ordered slugs (empty when the theme declares none).
 	 */
@@ -759,7 +759,7 @@ class GlobalStylesBridge {
 	 * {@see maybe_override_managed_user_palette}. Runtime only: the stored post is
 	 * untouched.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 *
 	 * @param \WP_HTTP_Response|\WP_Error $result  Result to send to the client.
 	 * @param array|mixed                 $handler Route handler (unused).
@@ -841,7 +841,7 @@ class GlobalStylesBridge {
 	 * the overlay) so it also covers the editor's preloaded request, and runs after
 	 * the managed-palette overlay.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 *
 	 * @param \WP_HTTP_Response|\WP_Error $result  Result to send to the client.
 	 * @param array|mixed                 $handler Route handler (unused).
@@ -898,7 +898,7 @@ class GlobalStylesBridge {
 	 *     (accent, status, foreground, custom vars) are unique and always kept, and
 	 *     non-hex values (`var(--…)`, `transparent`) are never deduped.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 *
 	 * @param array<int, mixed> $palette Palette entries (from decoded REST/theme.json data).
 	 * @return array<int, mixed>|null Filtered entries, or null when unchanged.
@@ -961,7 +961,7 @@ class GlobalStylesBridge {
 	 * Normalise a colour string to a comparable `#rrggbb` key, or '' when it is not
 	 * a plain hex (CSS `var(--…)`, `transparent`, `currentColor`, empty).
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 *
 	 * @param string $color Raw colour value.
 	 * @return string Lower-case `#rrggbb`, or '' when not a comparable hex.
@@ -1064,7 +1064,7 @@ class GlobalStylesBridge {
 	 * `global-styles-inline-css` AFTER our token stylesheet (measured on a real page
 	 * at byte 41233 vs ours at 27979) — the site won and this did nothing.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 * @return void
 	 */
 	public function print_page_palette(): void {
@@ -1691,7 +1691,7 @@ class GlobalStylesBridge {
 	 * align_astra_palette_swatches at 20). A no-op while Pro is active, or before a
 	 * Style Guide has been saved.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 *
 	 * @param array<string, mixed> $settings Block editor settings.
 	 * @return array<string, mixed> Filtered settings.
@@ -1764,7 +1764,7 @@ class GlobalStylesBridge {
 	 * Hooked to block_editor_settings_all at priority 22 (after the Pro-inactive
 	 * strip, which already removes every managed swatch when Pro is off).
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 *
 	 * @param array<string, mixed> $settings Block editor settings.
 	 * @return array<string, mixed>
@@ -1798,10 +1798,11 @@ class GlobalStylesBridge {
 	 * Inject Style Guide token CSS variables into the editor iframe.
 	 *
 	 * Component-tokens.css is enqueued via enqueue_block_editor_assets and reaches
-	 * the editor iframe, but the token variable definitions (:root { --spectra-btn-text: ... })
-	 * are added via wp_add_inline_style() which only reaches the admin <head>.
-	 * This filter ensures the variables are also available inside the iframe canvas
-	 * so that rules like color:var(--spectra-btn-text) resolve correctly.
+	 * the editor iframe, but the runtime colour token definitions
+	 * (:root { --spectra-neutral-0: ... }) are added via wp_add_inline_style()
+	 * which only reaches the admin <head>. This filter ensures the variables are
+	 * also available inside the iframe canvas so that rules like
+	 * color:var(--spectra-neutral-0) resolve correctly.
 	 *
 	 * @since 1.0.0
 	 *

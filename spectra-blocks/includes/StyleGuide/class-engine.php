@@ -465,7 +465,7 @@ class Engine {
 	 * their ramp positions (0/1/2/4/5/7). No interpolation: stops 3 and 6 are
 	 * not generated.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 *
 	 * @param array<string, mixed> $config Config array.
 	 * @return array<int, string> stop => hex.
@@ -483,7 +483,7 @@ class Engine {
 	 * Resolve the nine v2 colours from a config, filling any missing slug from the
 	 * defaults so compute() always has a complete palette.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 *
 	 * @param array<string, mixed> $config Config array.
 	 * @return array<string, string> slug => hex for all nine core roles.
@@ -505,7 +505,7 @@ class Engine {
 	 * Build the internal index-keyed chromatic map the shade pipeline expects:
 	 * brand chromatics 1-3 from the stored colours + fixed status chromatics 4-7.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 *
 	 * @param array<string, string> $colors slug => hex (nine core roles).
 	 * @return array<int, array{hex: string, name: string}> index => chromatic.
@@ -532,7 +532,7 @@ class Engine {
 	 * {@see ColorModel::default_colors()}, the single PHP source for every colour
 	 * default (brand, neutral and status).
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 *
 	 * @return array<string, string> slug => hex (nine core roles).
 	 */
@@ -552,7 +552,7 @@ class Engine {
 	 * reverse sync uses ({@see Sync\SyncOrchestrator::pull_from_theme()}), run once
 	 * to seed defaults rather than to persist.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 *
 	 * @return array<string, string> slug => hex for all nine core roles.
 	 */
@@ -723,7 +723,7 @@ class Engine {
 	 * Accepts the stored config only when it has a `colors` map. Anything else — an
 	 * empty option or a legacy v1 config — falls back to the default. No migration.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 *
 	 * @return array<string, mixed> Canonical v2 config.
 	 */
@@ -758,7 +758,7 @@ class Engine {
 	 *
 	 * Front end only — editing surfaces resolve the SITE guide.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 *
 	 * @return array<string, mixed>|null
 	 */
@@ -779,7 +779,7 @@ class Engine {
 	 * which is cached site-wide, so a page palette there would leak onto every other
 	 * page under a persistent object cache.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 *
 	 * @return array<string, string> slug => hex.
 	 */
@@ -829,7 +829,7 @@ class Engine {
 	 * The `--wp--preset--color--*` block for the queried page's own Style Guide, or
 	 * '' when it has none.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 *
 	 * @return string CSS, or ''.
 	 */
@@ -851,7 +851,7 @@ class Engine {
 	 * the lock renders on `body` and would otherwise beat the `:root` block
 	 * {@see GlobalStylesBridge::print_page_palette()} emits for this page.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 *
 	 * @return string[] Slugs without the `--wp--preset--color--` prefix.
 	 */
@@ -867,7 +867,7 @@ class Engine {
 	 * therefore carries no `_` prefix, {@see self::protect_page_meta()} marks it
 	 * protected so the classic Custom Fields box neither lists nor writes it.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 * @return void
 	 */
 	public function register_page_meta(): void {
@@ -894,7 +894,7 @@ class Engine {
 	/**
 	 * Hide the page-level Style Guide meta from the Custom Fields UI.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 *
 	 * @param bool   $is_protected Whether the key is protected.
 	 * @param string $meta_key     Meta key.
@@ -907,7 +907,7 @@ class Engine {
 	/**
 	 * Sanitize a page-level Style Guide before it is stored.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 *
 	 * @param mixed $value Incoming meta value.
 	 * @return array<string, mixed> Canonical, sanitized v2 config.
@@ -922,7 +922,7 @@ class Engine {
 	 * matches a generated preset slug thereby overrides it (old semantic_overrides
 	 * behaviour); a new slug adds a colour.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 *
 	 * @param array<string, mixed> $custom_colors Custom colours.
 	 * @return array<string, string> slug => hex.
@@ -956,7 +956,7 @@ class Engine {
 	 *  - surface-2  : Primary mixed 90% toward the background.
 	 *  - overlay    : heading mixed 20% toward black.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 *
 	 * @param array<string, string> $colors The nine core role colours (slug => hex).
 	 * @return array<string, string> slug => hex.
@@ -982,7 +982,7 @@ class Engine {
 	 * through, so a slug or hex that reaches `wp_head` can only ever be one that
 	 * `sanitize_key()`/`sanitize_hex_color()` accepted.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 *
 	 * @param array<string, mixed> $config Configuration array.
 	 * @return array<string, mixed> Canonical v2 config.
@@ -1014,7 +1014,7 @@ class Engine {
 	 * merge and {@see self::canonical_config()} so a colour is sanitized identically
 	 * whether it arrives over the route or straight through `update_post_meta()`.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 *
 	 * @param array<string|int, mixed> $custom_colors Raw custom colours.
 	 * @return array<string, array<string, string>> slug => { hex, name }.
@@ -1190,13 +1190,13 @@ class Engine {
 	 * id) could write a palette into someone else's draft, a revision, an attachment,
 	 * a `wp_template_part` or a `wp_block`.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 *
 	 * Shared with the Global Styles page-scoped writers, which have the same shape
 	 * and the same exposure — a larger one, in fact, since they store arbitrary
 	 * per-page CSS rather than a colour palette.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 *
 	 * @param int $post_id Target post.
 	 * @return true|\WP_Error
@@ -1505,7 +1505,7 @@ class Engine {
 	 *
 	 * MUST be called AFTER compute() — reads the live token_registry.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 *
 	 * @param array<string, string> $semantic_map slug => shade-token key (e.g. "primary" => "chromatic1-7").
 	 * @param array<string, string> $overrides    slug => explicit hex (wins over the derived value).

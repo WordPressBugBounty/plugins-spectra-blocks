@@ -182,7 +182,7 @@ class AssetLoader {
 	 * anything a third party sanitises — which is far more surface than the one
 	 * block that needs it.
 	 *
-	 * @since x.x.x
+	 * @since 1.0.4
 	 *
 	 * @param string $text Raw block text.
 	 * @return string Sanitised HTML.
