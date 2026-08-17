@@ -62,6 +62,10 @@ class MappingResolver {
 			ColorRoles::HEADING_TEXT    => 'heading',
 			ColorRoles::BORDER          => 'outline',
 			ColorRoles::MUTED           => 'neutral',
+			// The theme ships its own `foreground` swatch. Mapping it makes the pair
+			// two-way, so the Style Guide inherits the theme's value instead of
+			// repainting it on the first save.
+			ColorRoles::FOREGROUND      => 'foreground',
 		),
 
 		// Twenty Twenty-Five — `contrast` is dual-use (body text AND button bg).
@@ -79,6 +83,7 @@ class MappingResolver {
 			ColorRoles::HEADING_TEXT    => null,
 			ColorRoles::LINK            => null,
 			ColorRoles::MUTED           => null,
+			ColorRoles::FOREGROUND      => null,
 		),
 
 		// Astra — hybrid, index-based (`--ast-global-color-{N}`, slugs
@@ -103,6 +108,8 @@ class MappingResolver {
 			ColorRoles::BORDER          => null,
 			ColorRoles::LINK            => null,
 			ColorRoles::MUTED           => null,
+			// No Astra global-colour slot corresponds to it.
+			ColorRoles::FOREGROUND      => null,
 		),
 	);
 

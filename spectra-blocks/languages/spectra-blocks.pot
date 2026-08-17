@@ -2,14 +2,14 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Spectra Blocks 1.0.4\n"
+"Project-Id-Version: Spectra Blocks 1.0.5\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/spectra-blocks\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-13T08:37:26+00:00\n"
+"POT-Creation-Date: 2026-08-15T07:53:49+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.10.0\n"
 "X-Domain: spectra-blocks\n"
@@ -240,11 +240,11 @@ msgstr ""
 
 #: admin/inc/class-admin-learn.php:225
 #: admin/inc/class-admin-learn.php:233
-msgid "Open Global Styles"
+msgid "Manage Global Styles"
 msgstr ""
 
 #: admin/inc/class-admin-learn.php:226
-msgid "Access Global Styles to control typography, colors, and spacing for your entire site from one place."
+msgid "Access Global Styles to control your site's design from one place."
 msgstr ""
 
 #: admin/inc/class-admin-learn.php:247
@@ -312,7 +312,7 @@ msgid "Fast and customizable theme for your website."
 msgstr ""
 
 #: admin/inc/class-admin-menu.php:126
-#: classes/class-spectra-blocks-onboarding.php:419
+#: classes/class-spectra-blocks-onboarding.php:422
 msgid "Starter Templates"
 msgstr ""
 
@@ -385,7 +385,7 @@ msgstr ""
 
 #: admin/inc/class-admin-menu.php:379
 #: admin/inc/class-admin-menu.php:380
-#: classes/class-spectra-blocks-onboarding.php:335
+#: classes/class-spectra-blocks-onboarding.php:338
 msgid "Popup Builder"
 msgstr ""
 
@@ -8194,12 +8194,20 @@ msgstr ""
 msgid "Apply Global Styles classes to blocks from this panel."
 msgstr ""
 
-#: classes/class-spectra-blocks-learn-actions.php:910
+#: classes/class-spectra-blocks-learn-actions.php:922
+msgid "Click here to open and manage Global Styles."
+msgstr ""
+
+#: classes/class-spectra-blocks-learn-actions.php:946
+msgid "Open and manage Global Styles from this panel."
+msgstr ""
+
+#: classes/class-spectra-blocks-learn-actions.php:1006
 msgid "To publish/save your page click here."
 msgstr ""
 
 #: classes/class-spectra-blocks-onboarding.php:114
-#: classes/class-spectra-blocks-onboarding.php:560
+#: classes/class-spectra-blocks-onboarding.php:563
 msgid "Spectra Blocks Onboarding"
 msgstr ""
 
@@ -8278,167 +8286,171 @@ msgid "Stay in the loop and help shape Spectra Blocks! Get feature updates, and 
 msgstr ""
 
 #: classes/class-spectra-blocks-onboarding.php:166
-msgid "Enable the features you need to design faster and build better with Spectra Blocks."
+msgid "Spectra Blocks features"
 msgstr ""
 
-#: classes/class-spectra-blocks-onboarding.php:171
-msgid "Add anything else you need"
+#: classes/class-spectra-blocks-onboarding.php:167
+msgid "Powerful features to design faster and build better with Spectra Blocks."
 msgstr ""
 
 #: classes/class-spectra-blocks-onboarding.php:172
+msgid "Add anything else you need"
+msgstr ""
+
+#: classes/class-spectra-blocks-onboarding.php:173
 msgid "Optional free plugins from the same team. Install them now or later. None of them are required for Spectra Blocks to work."
 msgstr ""
 
-#: classes/class-spectra-blocks-onboarding.php:176
+#: classes/class-spectra-blocks-onboarding.php:177
 msgid "You are set up"
 msgstr ""
 
-#: classes/class-spectra-blocks-onboarding.php:177
+#: classes/class-spectra-blocks-onboarding.php:178
 msgid "Spectra Blocks is ready. The fastest way to see what it does is to build one page."
 msgstr ""
 
-#: classes/class-spectra-blocks-onboarding.php:178
+#: classes/class-spectra-blocks-onboarding.php:179
 msgid "What to do next"
 msgstr ""
 
-#: classes/class-spectra-blocks-onboarding.php:180
-#: classes/class-spectra-blocks-onboarding.php:186
+#: classes/class-spectra-blocks-onboarding.php:181
+#: classes/class-spectra-blocks-onboarding.php:187
 msgid "Create your first page"
 msgstr ""
 
-#: classes/class-spectra-blocks-onboarding.php:181
-#: classes/class-spectra-blocks-onboarding.php:190
+#: classes/class-spectra-blocks-onboarding.php:182
+#: classes/class-spectra-blocks-onboarding.php:191
 msgid "Visit the dashboard"
 msgstr ""
 
-#: classes/class-spectra-blocks-onboarding.php:182
-#: classes/class-spectra-blocks-onboarding.php:194
+#: classes/class-spectra-blocks-onboarding.php:183
+#: classes/class-spectra-blocks-onboarding.php:195
 msgid "Read the documentation"
 msgstr ""
 
-#: classes/class-spectra-blocks-onboarding.php:200
+#: classes/class-spectra-blocks-onboarding.php:201
 msgid "Exit setup"
 msgstr ""
 
-#: classes/class-spectra-blocks-onboarding.php:331
+#: classes/class-spectra-blocks-onboarding.php:334
 msgid "Advanced Layout Controls"
 msgstr ""
 
-#: classes/class-spectra-blocks-onboarding.php:332
+#: classes/class-spectra-blocks-onboarding.php:335
 msgid "Build flexible layouts with containers, spacing, and responsive controls."
 msgstr ""
 
-#: classes/class-spectra-blocks-onboarding.php:336
+#: classes/class-spectra-blocks-onboarding.php:339
 msgid "Create engaging popups for promotions, announcements, and lead generation."
 msgstr ""
 
-#: classes/class-spectra-blocks-onboarding.php:340
+#: classes/class-spectra-blocks-onboarding.php:343
 msgid "Global Block Styles"
 msgstr ""
 
-#: classes/class-spectra-blocks-onboarding.php:341
+#: classes/class-spectra-blocks-onboarding.php:344
 msgid "Apply custom styles, classes, and CSS to any block from a unified style editor."
 msgstr ""
 
-#: classes/class-spectra-blocks-onboarding.php:346
+#: classes/class-spectra-blocks-onboarding.php:349
 msgid "Motion Effects"
 msgstr ""
 
-#: classes/class-spectra-blocks-onboarding.php:347
+#: classes/class-spectra-blocks-onboarding.php:350
 msgid "Add scroll-triggered animations and motion effects to blocks for an engaging experience."
 msgstr ""
 
-#: classes/class-spectra-blocks-onboarding.php:352
+#: classes/class-spectra-blocks-onboarding.php:355
 msgid "SVG Animation"
 msgstr ""
 
-#: classes/class-spectra-blocks-onboarding.php:353
+#: classes/class-spectra-blocks-onboarding.php:356
 msgid "Bring SVG graphics to life with custom animations and interactive effects."
 msgstr ""
 
-#: classes/class-spectra-blocks-onboarding.php:358
+#: classes/class-spectra-blocks-onboarding.php:361
 msgid "Block Positioning"
 msgstr ""
 
-#: classes/class-spectra-blocks-onboarding.php:359
+#: classes/class-spectra-blocks-onboarding.php:362
 msgid "Position blocks with absolute, fixed, or sticky placement for advanced layout control."
 msgstr ""
 
-#: classes/class-spectra-blocks-onboarding.php:364
+#: classes/class-spectra-blocks-onboarding.php:367
 msgid "Dynamic Content"
 msgstr ""
 
-#: classes/class-spectra-blocks-onboarding.php:365
+#: classes/class-spectra-blocks-onboarding.php:368
 msgid "Connect your content and display dynamic data across your website with ease."
 msgstr ""
 
-#: classes/class-spectra-blocks-onboarding.php:370
+#: classes/class-spectra-blocks-onboarding.php:373
 #: src/extensions/gbs-editor/components/panels/BlockDefaultsPanel.jsx:101
 msgid "Loop Builder"
 msgstr ""
 
-#: classes/class-spectra-blocks-onboarding.php:371
+#: classes/class-spectra-blocks-onboarding.php:374
 msgid "Design custom layouts for blog posts, archives, and dynamic content."
 msgstr ""
 
-#: classes/class-spectra-blocks-onboarding.php:376
+#: classes/class-spectra-blocks-onboarding.php:379
 msgid "Login & Registration Forms"
 msgstr ""
 
-#: classes/class-spectra-blocks-onboarding.php:377
+#: classes/class-spectra-blocks-onboarding.php:380
 msgid "Create custom login and registration forms to manage user access on your website."
 msgstr ""
 
-#: classes/class-spectra-blocks-onboarding.php:412
+#: classes/class-spectra-blocks-onboarding.php:415
 msgid "ZIP AI"
 msgstr ""
 
-#: classes/class-spectra-blocks-onboarding.php:414
+#: classes/class-spectra-blocks-onboarding.php:417
 msgid "Describe your site in plain language and get a complete, editable layout built from Spectra blocks."
 msgstr ""
 
-#: classes/class-spectra-blocks-onboarding.php:421
+#: classes/class-spectra-blocks-onboarding.php:424
 msgid "Launch a site quickly with hundreds of professionally designed templates."
 msgstr ""
 
-#: classes/class-spectra-blocks-onboarding.php:425
+#: classes/class-spectra-blocks-onboarding.php:428
 msgid "SureForms"
 msgstr ""
 
-#: classes/class-spectra-blocks-onboarding.php:427
+#: classes/class-spectra-blocks-onboarding.php:430
 msgid "Create forms that feel conversational instead of like paperwork."
 msgstr ""
 
-#: classes/class-spectra-blocks-onboarding.php:431
+#: classes/class-spectra-blocks-onboarding.php:434
 msgid "SureMails"
 msgstr ""
 
-#: classes/class-spectra-blocks-onboarding.php:433
+#: classes/class-spectra-blocks-onboarding.php:436
 msgid "Reliable email delivery so your emails actually reach the inbox."
 msgstr ""
 
-#: classes/class-spectra-blocks-onboarding.php:437
+#: classes/class-spectra-blocks-onboarding.php:440
 msgid "SureRank"
 msgstr ""
 
-#: classes/class-spectra-blocks-onboarding.php:439
+#: classes/class-spectra-blocks-onboarding.php:442
 msgid "Simple, lightweight SEO assistant to help your site rank higher."
 msgstr ""
 
-#: classes/class-spectra-blocks-onboarding.php:524
-#: classes/class-spectra-blocks-onboarding.php:539
+#: classes/class-spectra-blocks-onboarding.php:527
+#: classes/class-spectra-blocks-onboarding.php:542
 msgid "Spectra Blocks Onboarding Data"
 msgstr ""
 
-#: classes/class-spectra-blocks-onboarding.php:564
+#: classes/class-spectra-blocks-onboarding.php:567
 msgid "First Name"
 msgstr ""
 
-#: classes/class-spectra-blocks-onboarding.php:568
+#: classes/class-spectra-blocks-onboarding.php:571
 msgid "Last Name"
 msgstr ""
 
-#: classes/class-spectra-blocks-onboarding.php:572
+#: classes/class-spectra-blocks-onboarding.php:575
 msgid "Email"
 msgstr ""
 
@@ -10112,40 +10124,40 @@ msgstr ""
 msgid "Inner Medium"
 msgstr ""
 
-#: includes/StyleGuide/class-engine.php:1124
+#: includes/StyleGuide/class-engine.php:1222
 msgid "Save into this page's own Style Guide instead of the site-wide one."
 msgstr ""
 
-#: includes/StyleGuide/class-engine.php:1129
+#: includes/StyleGuide/class-engine.php:1227
 msgid "With post_id, delete that page's Style Guide so it inherits the site-wide one again."
 msgstr ""
 
-#: includes/StyleGuide/class-engine.php:1133
+#: includes/StyleGuide/class-engine.php:1231
 msgid "The nine core roles as slug => hex. Partial maps merge."
 msgstr ""
 
-#: includes/StyleGuide/class-engine.php:1137
+#: includes/StyleGuide/class-engine.php:1235
 msgid "Additional colours as slug => { hex, name }. Replaces the whole layer."
 msgstr ""
 
-#: includes/StyleGuide/class-engine.php:1176
+#: includes/StyleGuide/class-engine.php:1274
 msgid "You do not have permission to manage the Style Guide."
 msgstr ""
 
-#: includes/StyleGuide/class-engine.php:1209
+#: includes/StyleGuide/class-engine.php:1307
 msgid "Unknown post."
 msgstr ""
 
-#: includes/StyleGuide/class-engine.php:1217
+#: includes/StyleGuide/class-engine.php:1315
 msgid "You cannot edit this post."
 msgstr ""
 
-#: includes/StyleGuide/class-engine.php:1227
+#: includes/StyleGuide/class-engine.php:1325
 msgid "Unsupported post type."
 msgstr ""
 
-#: includes/StyleGuide/class-engine.php:1271
-#: includes/StyleGuide/class-engine.php:1463
+#: includes/StyleGuide/class-engine.php:1369
+#: includes/StyleGuide/class-engine.php:1567
 msgid "Invalid configuration data."
 msgstr ""
 

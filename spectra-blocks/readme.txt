@@ -4,7 +4,7 @@ Tags: ai website builder, gutenberg blocks, page builder, block editor, website 
 Requires at least: 6.6
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.0.4
+Stable tag: 1.0.5
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -342,6 +342,10 @@ Service URL: https://wpspectra.com/whats-new/feed/
 [Terms of Service](https://www.brainstormforce.com/terms-and-conditions/) | [Privacy Policy](https://wpspectra.com/privacy-policy/)
 
 == Changelog ==
+
+= 1.0.5 - Monday, 17th August 2026 =
+* Fix: Buttons and button-style links now output valid HTML markup.
+* Fix: Images using data URIs are no longer stripped from your content.
 
 = 1.0.4 - Thursday, 13th August 2026 =
 * Improvement: Improved the onboarding wizard, including correct detection of an active Spectra Blocks Pro plan.

@@ -48,15 +48,27 @@ class AstraPaletteAdapter implements ColorSyncAdapter {
 	 *
 	 * The mapping is 1:1 — each managed Astra slot takes a DISTINCT Style Guide
 	 * token — so every slot can round-trip independently in the two-way sync (two
-	 * slots sharing a token could not both be reversed). The slot INDEX for each
-	 * semantic is resolved at runtime by {@see AstraPaletteAdapter::semantic_index()}
-	 * because Astra's compatibility flag swaps the four background indices.
+	 * slots sharing a token could not both be reversed).
 	 *
-	 * Slots 7 ("Subtle background") and 8 ("Other supporting") are UNMANAGED:
-	 * their old tokens were the interpolated ramp stops (neutral-3/neutral-6),
-	 * which are no longer generated. The sync neither pushes nor pulls them —
-	 * Astra keeps whatever value it has. Which stored colour (if any) should own
-	 * them is an open product decision.
+	 * ALL NINE Astra slots are mapped, so nothing is left theme-owned. The mapping
+	 * is expressed against Astra's ROLE, never a raw slot number:
+	 *   Brand                → Primary      Secondary Background → Surface
+	 *   Alternate Brand      → Secondary    Alternate Background → Outline
+	 *   Headings             → Heading      Subtle Background    → Neutral
+	 *   Text                 → Body         Other Supporting     → Accent
+	 *   Primary Background   → Background
+	 *
+	 * Every slot whose INDEX Astra moves is resolved through the compatibility flag
+	 * ({@see semantic_index()}), so a Style Guide colour always fills the same Astra
+	 * ROLE on every install. The slot NUMBER differs between a reorganized and a
+	 * legacy site — Astra swaps 4/5 and 6/7 — and that difference is inherent to
+	 * Astra and cannot be removed; only role correctness can be guaranteed.
+	 *
+	 * These were briefly PINNED to fixed numbers to keep the slot index identical
+	 * across sites. Do not reintroduce that: because Astra swaps the NAMES of 6 and
+	 * 7 too, pinning made a legacy site fill Subtle background with Outline and
+	 * Alternate background with Neutral — inverted from a reorganized site, which is
+	 * precisely the cross-site inconsistency the pinning was meant to fix.
 	 *
 	 * @since 1.0.4
 	 * @var array<string, string>
@@ -66,9 +78,11 @@ class AstraPaletteAdapter implements ColorSyncAdapter {
 		'alt-brand'    => 'secondary', // Slot 1 — Secondary brand (two-way).
 		'headings'     => 'neutral-7',    // Slot 2 — Headings.
 		'text'         => 'neutral-5',    // Slot 3 — Body text.
-		'primary-bg'   => 'neutral-0',    // Site background.
-		'secondary-bg' => 'neutral-1',    // Content / surface background.
-		'alternate-bg' => 'neutral-2',    // Alternate section background.
+		'primary-bg'   => 'neutral-0',    // Primary background   (flag-aware: 4/5).
+		'secondary-bg' => 'neutral-1',    // Secondary background (flag-aware: 5/4).
+		'alternate-bg' => 'neutral-2',    // Alternate background (flag-aware: 6/7).
+		'subtle-bg'    => 'neutral-4',    // Subtle background    (flag-aware: 7/6).
+		'other-supp'   => 'accent',       // Other supporting     (fixed: 8).
 	);
 
 	/**
@@ -358,42 +372,83 @@ class AstraPaletteAdapter implements ColorSyncAdapter {
 
 	/**
 	 * Resolve an Astra semantic slot to its slot index for the ACTIVE Astra
-	 * version. The brand/text/supporting slots are fixed; the four background
-	 * slots are swapped by the `astra_4_8_9_compatibility()` reorganize flag.
+	 * version. Brand/text and Other Supporting are fixed by Astra; the four
+	 * background slots are swapped in PAIRS by the `astra_4_8_9_compatibility()`
+	 * reorganize flag, and this mirrors Astra's own resolver verbatim
+	 * (class-gutenberg-editor-css.php):
+	 *
+	 *   $primary_color   = $reorganize ? color-4 : color-5
+	 *   $secondary_color = $reorganize ? color-5 : color-4
+	 *   $alternate_color = $reorganize ? color-6 : color-7
+	 *   $subtle_color    = $reorganize ? color-7 : color-6
+	 *
+	 * Following the flag for ALL FOUR is what keeps a Style Guide colour on the same
+	 * Astra ROLE everywhere: Outline always fills Alternate background, Neutral
+	 * always fills Subtle background. The slot NUMBER differs between a reorganized
+	 * and a legacy site, which is inherent to Astra and cannot be avoided.
+	 *
+	 * Do NOT pin these to fixed numbers. That was tried to keep the index identical
+	 * across sites, and it inverted the roles on legacy installs — Outline landed on
+	 * Subtle background and Neutral on Alternate background, the exact cross-site
+	 * mismatch the pinning was meant to remove.
 	 *
 	 * @since 1.0.4
 	 *
-	 * @param string $semantic Semantic key from SEMANTIC_TOKENS.
+	 * @param string $semantic   Semantic key from SEMANTIC_TOKENS.
+	 * @param bool   $reorganize Whether Astra uses the post-4.8.9 slot order
+	 *                           ({@see self::uses_reorganized_slots()}). Passed in so
+	 *                           a whole map costs one flag lookup, not one per slot.
 	 * @return int|null Slot index, or null if unknown.
 	 */
-	private function semantic_index( string $semantic ): ?int {
+	private static function semantic_index( string $semantic, bool $reorganize ): ?int {
 		$fixed = array(
-			'brand'     => 0,
-			'alt-brand' => 1,
-			'headings'  => 2,
-			'text'      => 3,
+			'brand'      => 0,
+			'alt-brand'  => 1,
+			'headings'   => 2,
+			'text'       => 3,
+			'other-supp' => 8, // Astra never moves this one.
 		);
 		if ( isset( $fixed[ $semantic ] ) ) {
 			return $fixed[ $semantic ];
 		}
-
-		$reorganize = class_exists( '\Astra_Dynamic_CSS' )
-			&& method_exists( '\Astra_Dynamic_CSS', 'astra_4_8_9_compatibility' )
-			&& \Astra_Dynamic_CSS::astra_4_8_9_compatibility();
 
 		$backgrounds = $reorganize
 			? array(
 				'primary-bg'   => 4,
 				'secondary-bg' => 5,
 				'alternate-bg' => 6,
+				'subtle-bg'    => 7,
 			)
 			: array(
 				'primary-bg'   => 5,
 				'secondary-bg' => 4,
 				'alternate-bg' => 7,
+				'subtle-bg'    => 6,
 			);
 
 		return $backgrounds[ $semantic ] ?? null;
+	}
+
+	/**
+	 * Whether Astra places the four background colours in its REORGANIZED
+	 * (post-4.8.9) slot order.
+	 *
+	 * Defaults to TRUE and only reports the legacy order when Astra is present AND
+	 * explicitly sets the compatibility flag. The slot map is now read on non-Astra
+	 * themes too (the render-time `--ast-global-color-*` aliases in
+	 * {@see \SpectraBlocks\StyleGuide\GlobalStylesBridge} are emitted regardless of
+	 * the active theme), and there the modern layout is the right assumption —
+	 * deriving `false` from a merely-absent Astra class would silently hand those
+	 * consumers the legacy slot order.
+	 *
+	 * @since 1.0.5
+	 *
+	 * @return bool True for the 4.8.9+ layout.
+	 */
+	private static function uses_reorganized_slots(): bool {
+		return ! class_exists( '\Astra_Dynamic_CSS' )
+			|| ! method_exists( '\Astra_Dynamic_CSS', 'astra_4_8_9_compatibility' )
+			|| \Astra_Dynamic_CSS::astra_4_8_9_compatibility();
 	}
 
 	/**
@@ -410,11 +465,7 @@ class AstraPaletteAdapter implements ColorSyncAdapter {
 			return array();
 		}
 		$patch = array();
-		foreach ( self::SEMANTIC_TOKENS as $semantic => $token_key ) {
-			$index = $this->semantic_index( $semantic );
-			if ( null === $index ) {
-				continue;
-			}
+		foreach ( self::shade_map() as $index => $token_key ) {
 			$hex = $tokens->get( $token_key );
 			if ( is_string( $hex ) && '' !== $hex ) {
 				$patch[ self::SLUG_PREFIX . $index ] = $hex;
@@ -424,25 +475,51 @@ class AstraPaletteAdapter implements ColorSyncAdapter {
 	}
 
 	/**
-	 * The reverse map: Astra slot INDEX => Style Guide token key.
+	 * Astra slot INDEX => Style Guide token key, for the ACTIVE Astra layout.
 	 *
-	 * The inverse of the push ({@see resolve_patch}) — same source of truth
-	 * ({@see SEMANTIC_TOKENS} + {@see semantic_index}), so push and pull can never
-	 * drift. Consumed by the reverse sync to turn a changed Astra slot back into the
-	 * Style Guide token it should update. Flag-aware (background indices).
+	 * THE single source of truth for "which Astra slot carries which Style Guide
+	 * colour". Everything that speaks both languages must resolve through this —
+	 * the push ({@see resolve_patch}), the reverse sync ({@see reverse_map}), the
+	 * unsaved-state inheritance ({@see \SpectraBlocks\StyleGuide\Engine::inherited_default_colors()})
+	 * and the render-time aliases
+	 * ({@see \SpectraBlocks\StyleGuide\GlobalStylesBridge::astra_shade_map()}) —
+	 * so no consumer can drift from what the sync actually writes.
+	 *
+	 * Static because most consumers only need the mapping, not an adapter instance.
+	 * Flag-aware: {@see semantic_index()} swaps the background indices on installs
+	 * that predate Astra's 4.8.9 palette reorganization, so a hardcoded copy of this
+	 * map is wrong on every legacy site.
 	 *
 	 * @since 1.0.4
 	 *
 	 * @return array<int, string> slot index => SG token key (e.g. 3 => 'neutral-5').
 	 */
-	public function reverse_map(): array {
+	public static function shade_map(): array {
+		$reorganize = self::uses_reorganized_slots();
+
 		$map = array();
 		foreach ( self::SEMANTIC_TOKENS as $semantic => $token_key ) {
-			$index = $this->semantic_index( $semantic );
+			$index = self::semantic_index( $semantic, $reorganize );
 			if ( null !== $index ) {
 				$map[ $index ] = $token_key;
 			}
 		}
+		ksort( $map );
 		return $map;
+	}
+
+	/**
+	 * The reverse map: Astra slot INDEX => Style Guide token key.
+	 *
+	 * The inverse of the push ({@see resolve_patch}) — both read {@see shade_map()},
+	 * so push and pull can never drift. Consumed by the reverse sync to turn a
+	 * changed Astra slot back into the Style Guide token it should update.
+	 *
+	 * @since 1.0.5
+	 *
+	 * @return array<int, string> slot index => SG token key (e.g. 3 => 'neutral-5').
+	 */
+	public function reverse_map(): array {
+		return self::shade_map();
 	}
 }

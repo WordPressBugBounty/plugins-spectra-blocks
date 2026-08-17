@@ -55,6 +55,7 @@ class ColorRoles {
 	const LINK            = 'link';
 	const BORDER          = 'border';
 	const MUTED           = 'muted';
+	const FOREGROUND      = 'foreground';
 
 	/**
 	 * Brand roles (two-way sync).
@@ -82,6 +83,7 @@ class ColorRoles {
 		self::LINK,
 		self::BORDER,
 		self::MUTED,
+		self::FOREGROUND,
 	);
 
 	/**
@@ -89,7 +91,7 @@ class ColorRoles {
 	 *
 	 * Theme-independent: the canonical Style Guide shade each role is drawn from.
 	 * Uses the TokenRegistry key format (e.g. `primary`, `neutral-0`), the
-	 * same one {@see \SpectraBlocks\StyleGuide\GlobalStylesBridge::ASTRA_SHADE_MAP}
+	 * same one {@see \SpectraBlocks\StyleGuide\GlobalStylesBridge::astra_shade_map()}
 	 * resolves. Brand keys equal `chromatics[N].hex` exactly.
 	 *
 	 * @since 1.0.4
@@ -106,6 +108,7 @@ class ColorRoles {
 		self::LINK            => 'primary',
 		self::BORDER          => 'neutral-2',
 		self::MUTED           => 'neutral-4',
+		self::FOREGROUND      => 'foreground',
 	);
 
 	/**

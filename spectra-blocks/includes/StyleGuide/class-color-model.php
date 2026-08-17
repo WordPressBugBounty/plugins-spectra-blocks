@@ -83,6 +83,16 @@ class ColorModel {
 			'stop'  => 0,
 			'token' => 'neutral-0',
 		),
+		// Standalone: neither a brand ramp seed nor a neutral stop, so it carries its
+		// own token rather than borrowing one. Foreground is the colour that sits ON a
+		// coloured surface (button labels, icons on a filled background). It is STORED
+		// rather than derived so it can round-trip with themes that expose a matching
+		// palette slug — Spectra One ships `foreground`, and while this was a derived
+		// variable a Style Guide save silently repainted that swatch.
+		'foreground' => array(
+			'kind'  => 'standalone',
+			'token' => 'foreground',
+		),
 	);
 
 	/**
@@ -176,7 +186,7 @@ class ColorModel {
 	 * @var array<string, string>
 	 */
 	const SEMANTIC_MAP = array(
-		// Core roles (the 9).
+		// Core roles (the 10).
 		'primary'       => 'primary',
 		'secondary'     => 'secondary',
 		'accent'        => 'accent',
@@ -186,8 +196,12 @@ class ColorModel {
 		'surface'       => 'neutral-1',
 		'outline'       => 'neutral-2',
 		'neutral'       => 'neutral-4',
-		// Extended derived roles.
-		'foreground'    => 'neutral-7',
+		// Resolves to its OWN token now that it is a stored role. It previously
+		// pointed at `neutral-7` while the derived-variable layer overrode it with a
+		// contrast-derived value, so the slug resolved to neither — and on a theme
+		// that ships a `foreground` swatch (Spectra One) that value silently replaced
+		// the theme's own.
+		'foreground'    => 'foreground',
 		// Status.
 		'success'       => 'success',
 		'error'         => 'error',
@@ -238,6 +252,26 @@ class ColorModel {
 		foreach ( self::CORE_ROLES as $slug => $def ) {
 			if ( 'brand' === $def['kind'] ) {
 				$map[ $slug ] = $def['chromatic'];
+			}
+		}
+		return $map;
+	}
+
+	/**
+	 * Standalone role slug → its token name.
+	 *
+	 * Roles that are neither a brand ramp seed nor a neutral stop, so the emitter has
+	 * no ramp to place them on and sets their token directly from the stored hex.
+	 *
+	 * @since 1.0.5
+	 *
+	 * @return array<string, string> slug => token.
+	 */
+	public static function standalone_map() {
+		$map = array();
+		foreach ( self::CORE_ROLES as $slug => $def ) {
+			if ( 'standalone' === $def['kind'] ) {
+				$map[ $slug ] = $def['token'];
 			}
 		}
 		return $map;
@@ -302,7 +336,7 @@ class ColorModel {
 	 *
 	 * @since 1.0.4
 	 *
-	 * @return array<string, string> slug => hex for all nine core roles.
+	 * @return array<string, string> slug => hex for all ten core roles.
 	 */
 	public static function default_colors() {
 		return self::DEFAULT_BRAND + array(
@@ -312,6 +346,10 @@ class ColorModel {
 			'neutral'    => '#767884',
 			'body'       => '#464757',
 			'heading'    => '#09081b',
+			// White clears 4.5:1 on the default Primary, so this literal equals what
+			// the editor's AUTO rule derives for a fresh install — the role became
+			// stored without changing the colour any existing site renders.
+			'foreground' => '#ffffff',
 		);
 	}
 }
