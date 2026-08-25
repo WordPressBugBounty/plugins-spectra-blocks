@@ -165,7 +165,12 @@
       ]
     },
     "iconPosition": {
-      "type": "string"
+      "type": "string",
+      "enum": [
+        "before",
+        "after"
+      ],
+      "default": "after"
     },
     "flipForRTL": {
       "type": "boolean",

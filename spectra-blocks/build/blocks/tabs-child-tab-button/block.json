@@ -116,7 +116,11 @@
       ]
     },
     "iconPosition": {
-      "type": "string"
+      "type": "string",
+      "enum": [
+        "before",
+        "after"
+      ]
     },
     "size": {
       "type": "string"
