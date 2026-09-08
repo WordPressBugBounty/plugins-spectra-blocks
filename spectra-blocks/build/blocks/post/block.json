@@ -52,10 +52,10 @@
     "spectra/post/queryId": "queryId",
     "spectra/post/pageKey": "pageKey",
     "spectra/post/query": "query",
-    "spectra/post/responsiveControls": "responsiveControls",
     "spectra/post/postsToShow": "postsToShow",
     "spectra/post/slidesPerView": "slidesPerView",
     "spectra/post/spaceBetween": "spaceBetween",
+    "spectra/post/style": "style",
     "spectra/post/loop": "loop",
     "spectra/post/speed": "speed",
     "spectra/post/autoplay": "autoplay",
@@ -233,9 +233,6 @@
     },
     "paginationBackgroundActiveColor": {
       "type": "string"
-    },
-    "responsiveControls": {
-      "type": "object"
     }
   },
   "render": "file:./controller.php",

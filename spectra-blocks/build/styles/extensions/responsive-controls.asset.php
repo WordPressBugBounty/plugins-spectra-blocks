@@ -1,1 +1,1 @@
-<?php if ( ! defined( 'ABSPATH' ) ) { exit; }  return array('dependencies' => array(), 'version' => '7a67b7e7945b199a6ae2');
+<?php if ( ! defined( 'ABSPATH' ) ) { exit; }  return array('dependencies' => array(), 'version' => 'ec67f7ab2075c5b3bce1');
