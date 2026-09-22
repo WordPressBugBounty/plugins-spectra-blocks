@@ -107,6 +107,10 @@
     },
     "backgroundGradientHover": {
       "type": "string"
+    },
+    "htmlAttributes": {
+      "type": "object",
+      "default": {}
     }
   }
 }

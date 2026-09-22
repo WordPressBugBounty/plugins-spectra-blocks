@@ -61,7 +61,6 @@ class Plugin {
 		}
 		add_action( 'wp_ajax_ast_block_templates_importer', array( $this, 'template_importer' ) );
 		add_action( 'wp_ajax_ast_block_templates_activate_plugin', array( $this, 'activate_plugin' ) );
-		add_filter( 'plugins_api', array( $this, 'maybe_set_spectra_blocks_download_source' ), 10, 3 );
 		add_action( 'wp_ajax_ast_block_templates_import_wpforms', array( $this, 'import_wpforms' ) );
 		add_action( 'wp_ajax_ast_block_templates_import_sureforms', array( $this, 'import_sureforms' ) );
 		add_action( 'wp_ajax_ast_block_templates_import_block', array( $this, 'import_block' ) );
@@ -178,6 +177,11 @@ class Plugin {
 	public function init() {
 		// Add token when user authorized from GT library.
 		if ( isset( $_GET['ast_action'] ) && 'auth' === $_GET['ast_action'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			// Only users who can manage the site are allowed to store site-wide credentials.
+			if ( ! current_user_can( 'manage_options' ) ) {
+				return;
+			}
+
 			// Get the nonce.
 			$nonce = ( isset( $_GET['nonce'] ) ) ? sanitize_key( wp_unslash( $_GET['nonce'] ) ) : '';
 
@@ -835,6 +839,10 @@ class Plugin {
 			if ( strpos( $link, '/wp-content/plugins/ultimate-addons-for-gutenberg/' ) !== false ) {
 				$content = str_replace( AST_BLOCK_TEMPLATES_LIBRARY_URL, site_url( '/' ), $content );
 			}
+			// Replace the library URL with site URL if link static link from Spectra Blocks plugin.
+			if ( strpos( $link, '/wp-content/plugins/spectra-blocks/' ) !== false ) {
+				$content = str_replace( AST_BLOCK_TEMPLATES_LIBRARY_URL, site_url( '/' ), $content );
+			}
 		}
 
 		return $content;
@@ -848,10 +856,17 @@ class Plugin {
 	 * @return string                  Content.
 	 */
 	public function replace( $content, $dynamic_content ) {
-		// Replace the library URL with site URL if link static link from Spectra plugin.
+		// Replace the library URL with site URL if link is static link from Spectra plugin.
 		$content = str_replace(
 			AST_BLOCK_TEMPLATES_LIBRARY_URL . 'wp-content/plugins/ultimate-addons-for-gutenberg/',
 			site_url( '/wp-content/plugins/ultimate-addons-for-gutenberg/' ),
+			$content
+		);
+
+		// Replace the library URL with site URL if link is static link from Spectra Blocks plugin.
+		$content = str_replace(
+			AST_BLOCK_TEMPLATES_LIBRARY_URL . 'wp-content/plugins/spectra-blocks/',
+			site_url( '/wp-content/plugins/spectra-blocks/' ),
 			$content
 		);
 
@@ -1088,68 +1103,6 @@ class Plugin {
 				'message' => 'Plugin activated successfully.',
 			)
 		);
-	}
-
-	/**
-	 * Provide a trusted ZIP download source for plugins not yet on WordPress.org.
-	 *
-	 * The consent popup installs plugins through WordPress core's standard
-	 * `install-plugin` flow, which resolves the package via
-	 * `plugins_api( 'plugin_information' )`. Spectra Blocks is not published on
-	 * WordPress.org yet, so we intercept that lookup for its slug and return the
-	 * custom download URL — core then downloads and installs it as usual, and the
-	 * existing (allow-listed) activation handler activates it.
-	 *
-	 * Temporary bridge: once Spectra Blocks is live on WordPress.org, empty the
-	 * `ast_block_templates_plugin_zip_sources` map (or remove this method) and the
-	 * standard WordPress.org install path takes over.
-	 *
-	 * @since 2.4.31
-	 *
-	 * @param false|object|array<string, mixed> $result The result object or array. Default false.
-	 * @param string                            $action The type of information being requested.
-	 * @param object                            $args   Plugin API arguments.
-	 * @return false|object|array<string, mixed> Modified result.
-	 */
-	public function maybe_set_spectra_blocks_download_source( $result, $action, $args ) {
-		// Only the plugin details lookup carries a download link; search uses a different action.
-		if ( 'plugin_information' !== $action ) {
-			return $result;
-		}
-
-		if ( ! isset( $args->slug ) || 'spectra-blocks' !== $args->slug ) {
-			return $result;
-		}
-
-		if ( ! current_user_can( 'install_plugins' ) ) {
-			return $result;
-		}
-
-		/**
-		 * Trusted ZIP sources keyed by plugin slug, for plugins not yet on
-		 * WordPress.org. Empty the entry to fall back to the WordPress.org package.
-		 *
-		 * @since 2.4.31
-		 * @param array<string, string> $sources Map of plugin slug => ZIP URL.
-		 */
-		$sources = apply_filters(
-			'ast_block_templates_plugin_zip_sources',
-			array(
-				'spectra-blocks' => 'https://wpspectra.com/wp-content/uploads/2026/06/spectra-blocks.0.0.8.zip',
-			)
-		);
-
-		if ( empty( $sources['spectra-blocks'] ) ) {
-			return $result;
-		}
-
-		$information                = new \stdClass();
-		$information->name          = 'Spectra Blocks';
-		$information->slug          = 'spectra-blocks';
-		$information->version       = '0.0.8';
-		$information->download_link = esc_url_raw( $sources['spectra-blocks'] );
-
-		return $information;
 	}
 
 	/**

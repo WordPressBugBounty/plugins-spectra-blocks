@@ -169,6 +169,10 @@
     },
     "hoverIconAriaLabel": {
       "type": "string"
+    },
+    "htmlAttributes": {
+      "type": "object",
+      "default": {}
     }
   }
 }

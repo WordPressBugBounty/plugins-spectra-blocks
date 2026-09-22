@@ -3,7 +3,7 @@
         'name' => 'brainstormforce/spectra-blocks',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => '9c210e30c790a285f90828a3c62b44588c3de36b',
+        'reference' => '7a6392c0ac762ecb3e13679a3f372b30983c7c35',
         'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -37,7 +37,7 @@
         'brainstormforce/gutenberg-templates' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => 'a1a90613440d8ce5138a3895e9907af68c71442b',
+            'reference' => '4cbb9e6c8e8cd566cd3e0310b46abd3e09c72dd1',
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../lib/gutenberg-templates',
             'aliases' => array(
@@ -66,7 +66,7 @@
         'brainstormforce/spectra-blocks' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => '9c210e30c790a285f90828a3c62b44588c3de36b',
+            'reference' => '7a6392c0ac762ecb3e13679a3f372b30983c7c35',
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
