@@ -127,6 +127,12 @@
     "isRootBlock": {
       "type": "boolean"
     },
+    "spaceBefore": {
+      "type": "boolean"
+    },
+    "spaceAfter": {
+      "type": "boolean"
+    },
     "enableTextShadow": {
       "type": "boolean"
     },
