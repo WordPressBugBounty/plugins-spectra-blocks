@@ -36,6 +36,7 @@
     "uagb"
   ],
   "supports": {
+    "html": false,
     "interactivity": true,
     "anchor": true,
     "__experimentalBorder": {

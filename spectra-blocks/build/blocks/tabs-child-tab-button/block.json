@@ -11,6 +11,7 @@
     "spectra/tabs-child-tab-wrapper"
   ],
   "supports": {
+    "html": false,
     "__experimentalBorder": {
       "width": true,
       "color": true,
@@ -182,6 +183,10 @@
     },
     "borderColorActiveHover": {
       "type": "string"
+    },
+    "htmlAttributes": {
+      "type": "object",
+      "default": {}
     }
   }
 }

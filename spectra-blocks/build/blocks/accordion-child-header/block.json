@@ -15,6 +15,7 @@
     "spectra/accordion-child-item"
   ],
   "supports": {
+    "html": false,
     "shadow": true,
     "__experimentalBorder": {
       "style": true,

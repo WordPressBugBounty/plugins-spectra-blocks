@@ -34,6 +34,7 @@
     "spectra/tabs-child-tabpanel"
   ],
   "supports": {
+    "html": false,
     "interactivity": true,
     "anchor": true,
     "__experimentalBorder": {
@@ -256,6 +257,10 @@
     },
     "borderColorActiveHover": {
       "type": "string"
+    },
+    "htmlAttributes": {
+      "type": "object",
+      "default": {}
     }
   }
 }

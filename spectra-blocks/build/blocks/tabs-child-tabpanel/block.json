@@ -11,6 +11,7 @@
     "spectra/tabs"
   ],
   "supports": {
+    "html": false,
     "__experimentalBorder": {
       "width": true,
       "color": true,
@@ -107,6 +108,10 @@
     },
     "backgroundGradientHover": {
       "type": "string"
+    },
+    "htmlAttributes": {
+      "type": "object",
+      "default": {}
     }
   }
 }

@@ -11,6 +11,7 @@
   ],
   "textdomain": "spectra-blocks",
   "supports": {
+    "html": false,
     "__experimentalBorder": {
       "width": true,
       "color": true,

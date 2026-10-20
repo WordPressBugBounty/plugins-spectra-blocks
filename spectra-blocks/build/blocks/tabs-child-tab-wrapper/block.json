@@ -15,6 +15,7 @@
     "spectra/tabs"
   ],
   "supports": {
+    "html": false,
     "shadow": true,
     "__experimentalBorder": {
       "width": true,
@@ -86,6 +87,10 @@
     "isPreview": {
       "type": "boolean",
       "default": false
+    },
+    "htmlAttributes": {
+      "type": "object",
+      "default": {}
     }
   }
 }
