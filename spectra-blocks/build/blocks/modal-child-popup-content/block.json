@@ -84,10 +84,6 @@
       "type": "boolean",
       "default": false
     },
-    "defaultTemplate": {
-      "type": "boolean",
-      "default": false
-    },
     "icon": {
       "type": [
         "string",
@@ -97,10 +93,6 @@
     },
     "iconPosition": {
       "type": "string"
-    },
-    "keyPress": {
-      "type": "boolean",
-      "default": true
     },
     "overlayClick": {
       "type": "boolean",

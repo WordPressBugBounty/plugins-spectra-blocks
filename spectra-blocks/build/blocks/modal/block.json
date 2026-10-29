@@ -97,10 +97,6 @@
     "modalId": {
       "type": "string"
     },
-    "defaultTemplate": {
-      "type": "boolean",
-      "default": false
-    },
     "isVisible": {
       "type": "boolean",
       "default": false

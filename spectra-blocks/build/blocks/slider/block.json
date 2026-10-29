@@ -119,9 +119,6 @@
     "paginationColorHover": {
       "type": "string"
     },
-    "backgroundType": {
-      "type": "string"
-    },
     "slideCount": {
       "type": "number"
     },
@@ -179,9 +176,6 @@
     },
     "paginationTopMargin": {
       "type": "string"
-    },
-    "autoplayHoverPause": {
-      "type": "boolean"
     },
     "autoplayPauseOnHover": {
       "type": "boolean"

@@ -59,9 +59,6 @@
       "type": "boolean",
       "default": false
     },
-    "backgroundType": {
-      "type": "string"
-    },
     "background": {
       "type": "object"
     },

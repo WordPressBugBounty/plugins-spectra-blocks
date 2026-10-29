@@ -13,6 +13,7 @@
     "spectra/container"
   ],
   "usesContext": [
+    "spectra/counter/counterStyle",
     "spectra/counter/startNumber",
     "spectra/counter/endNumber",
     "spectra/counter/animationDuration",
